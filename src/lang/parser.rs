@@ -1,6 +1,10 @@
 pub struct Parser {}
 
 impl Parser {
+  pub fn new() -> Parser {
+    Parser {}
+  }
+
   pub fn tokenize(&self, expr: String) -> Vec<String> {
     let mut tokens = Vec::new();
 

@@ -1,15 +1,15 @@
 mod lang;
 
-use lang::parser::Parser;
+use lang::{runner::Runner};
 
 
 fn main() {
-    let program = "
+    let program = String::from("
         (+ 1 2)
-    ";
+    ");
 
-    let parser = Parser{};
-    let output = parser.tokenize(program.into());
+    let mut runner = Runner::new();
+    let output = runner.eval(program);
 
     println!("{:?}", output);
 }
