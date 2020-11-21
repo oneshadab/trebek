@@ -1,32 +1,21 @@
-use super::{parser::Parser, scope::Scope};
+use super::{parser::Parser, scope::Scope, builtins};
 pub struct Runner {
   root_scope: Scope
 }
 
 impl Runner {
   pub fn new() -> Runner{
-    let mut default_scope = Scope::new();
+    let mut runner =  Runner {
+      root_scope: Scope::new()
+    };
 
-    default_scope.set(
-      String::from('+'),
-      |args: Vec<String>| -> String {
-        match &args[..] {
-          [a, b] => {
-            let i_a: i32 = a.parse().unwrap();
-            let i_b: i32 = b.parse().unwrap();
+    runner.init_builtins();
 
-            return (i_a + i_b).to_string();
-          }
-          _ => {
-            panic!("Missing args for function call")
-          }
-        }
-      }
-    );
+    return runner;
+  }
 
-    Runner {
-      root_scope: default_scope
-    }
+  fn init_builtins(&mut self) {
+    self.root_scope.set("+".into(), builtins::add);
   }
 
   pub fn eval(&mut self, expr: String) -> String {
@@ -37,7 +26,7 @@ impl Runner {
 
     match self.root_scope.resolve(func_name) {
       Some(func) => {
-        func(args)
+        func(&mut self.root_scope, args)
       }
       None => {
         panic!("Function not found!")
