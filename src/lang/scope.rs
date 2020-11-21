@@ -1,6 +1,6 @@
 use std::collections::HashMap;
+use super::types::Function;
 
-type Function = fn(Vec<String>) -> String;
 pub struct Scope {
   records: HashMap<String, Function>
 }
