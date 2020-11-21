@@ -1,3 +1,32 @@
+use std::fmt;
 use super::scope::Scope;
 
-pub type Function = fn(&mut Scope, Vec<String>) -> String;
+pub type Function = fn(&mut Scope, Vec<String>) -> Record;
+pub type Symbol = String;
+pub type Expression = String;
+
+pub enum Record {
+  Function(Function),
+  Symbol(Symbol),
+  Expression(Expression),
+  Empty
+}
+
+impl fmt::Debug for Record {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Record::Function(func) => {
+        f.debug_struct("[Function]").finish()
+      }
+      Record::Symbol(symbol) => {
+        f.debug_struct(symbol).finish()
+      }
+      Record::Expression(expr) => {
+        f.debug_struct(expr).finish()
+      }
+      Record::Empty => {
+        f.debug_struct("").finish()
+      }
+    }
+  }
+}
