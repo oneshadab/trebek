@@ -1,13 +1,13 @@
 use super::{parser::Parser, scope::Scope};
 pub struct Runner {
-  rootScope: Scope
+  root_scope: Scope
 }
 
 impl Runner {
   pub fn new() -> Runner{
-    let mut defaultScope = Scope::new();
+    let mut default_scope = Scope::new();
 
-    defaultScope.set(
+    default_scope.set(
       String::from('+'),
       |args: Vec<String>| -> String {
         match &args[..] {
@@ -25,21 +25,21 @@ impl Runner {
     );
 
     Runner {
-      rootScope: defaultScope
+      root_scope: default_scope
     }
   }
 
   pub fn eval(&mut self, expr: String) -> String {
-    let mut tokens = Parser::new().tokenize(expr);
+    let tokens = Parser::new().tokenize(expr);
 
-    let funcName = &tokens[0];
+    let func_name = &tokens[0];
     let args: Vec<String> = tokens[1..].into();
 
-    match self.rootScope.resolve(funcName).unwrap() {
-      func => {
+    match self.root_scope.resolve(func_name) {
+      Some(func) => {
         func(args)
       }
-      _ => {
+      None => {
         panic!("Function not found!")
       }
     }
