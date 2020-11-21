@@ -16,7 +16,7 @@ impl Scope {
     self.records.insert(key, val);
   }
 
-  pub fn resolve(&mut self, key: String) -> Option<&Function>{
-    return self.records.get(&key);
+  pub fn resolve(&mut self, key: &String) -> Option<&Function>{
+    return self.records.get(key);
   }
 }
