@@ -1,8 +1,9 @@
 use std::collections::HashMap;
-use super::types::Function;
+use super::types::{Record, Symbol};
+
 
 pub struct Scope {
-  records: HashMap<String, Function>
+  records: HashMap<Symbol, Record>
 }
 
 impl Scope {
@@ -12,11 +13,11 @@ impl Scope {
     }
   }
 
-  pub fn set(&mut self, key: String, val: Function) {
+  pub fn set(&mut self, key: String, val: Record) {
     self.records.insert(key, val);
   }
 
-  pub fn resolve(&mut self, key: &String) -> Option<&Function>{
+  pub fn resolve(&mut self, key: &String) -> Option<&Record>{
     return self.records.get(key);
   }
 }
