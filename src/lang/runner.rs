@@ -4,10 +4,10 @@ pub struct Runner {
 }
 
 impl Runner {
-  pub fn new(&mut self) {
-    self.rootScope = Scope::new();
+  pub fn new() -> Runner{
+    let mut defaultScope = Scope::new();
 
-    self.rootScope.set(
+    defaultScope.set(
       String::from('+'),
       |args: Vec<String>| -> String {
         match &args[..] {
@@ -23,6 +23,25 @@ impl Runner {
         }
       }
     );
+
+    Runner {
+      rootScope: defaultScope
+    }
   }
 
+  pub fn eval(&mut self, expr: String) -> String {
+    let mut tokens = Parser::new().tokenize(expr);
+
+    let funcName = &tokens[0];
+    let args: Vec<String> = tokens[1..].into();
+
+    match self.rootScope.resolve(funcName).unwrap() {
+      func => {
+        func(args)
+      }
+      _ => {
+        panic!("Function not found!")
+      }
+    }
+  }
 }
