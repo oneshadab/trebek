@@ -28,3 +28,15 @@ pub fn def(scope: &mut Scope, args: Vec<String>) -> Record {
     }
   }
 }
+
+pub fn print(scope: &mut Scope, args: Vec<String>) -> Record {
+  match &args[..] {
+    [symbol] => {
+      println!("{}", symbol);
+      Record::Empty
+    }
+    _ => {
+      panic!("Function called with incorrect number of args")
+    }
+  }
+}

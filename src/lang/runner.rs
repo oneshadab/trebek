@@ -16,6 +16,8 @@ impl Runner {
 
   fn init_builtins(&mut self) {
     self.root_scope.set(String::from("+"), Record::Function(builtins::add));
+    self.root_scope.set(String::from("def"), Record::Function(builtins::def));
+    self.root_scope.set(String::from("print"), Record::Function(builtins::print));
   }
 
   pub fn eval(&mut self, expr: String) -> Record {
