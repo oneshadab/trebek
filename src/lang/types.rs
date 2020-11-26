@@ -30,3 +30,22 @@ impl fmt::Debug for Record {
     }
   }
 }
+
+impl Clone for Record {
+  fn clone(&self) -> Self {
+      match self {
+          Record::Function(func) => {
+            Record::Function(*func)
+          }
+          Record::Symbol(symbol) => {
+            Record::Symbol(symbol.into())
+          }
+          Record::Expression(expr) => {
+            Record::Expression(expr.into())
+          }
+          Record::Empty => {
+            Record::Empty
+          }
+      }
+  }
+}
