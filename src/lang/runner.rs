@@ -1,19 +1,23 @@
+use std::{rc::Rc, cell::RefCell};
+
 use super::{builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
-pub struct Runner {
-  pub root_scope: Scope,
-  pub current_scope: Scope
+pub struct Runner  {
+  pub root_scope: Rc<RefCell<Scope>>,
+  pub current_scope: Rc<RefCell<Scope>>
 }
 
 impl Runner {
-  pub fn new() -> Runner{
+  pub fn new() -> Runner {
+    let scope = Rc::new(RefCell::new(Scope::new(None)));
+
     let mut runner = Runner {
-      root_scope: Scope::new(),
-      current_scope: Scope::new()
+      root_scope: scope.clone(),
+      current_scope: scope.clone()
     };
 
     runner.init_builtins();
 
-    return runner;
+    runner
   }
 
   fn init_builtins(&mut self) {
@@ -41,7 +45,8 @@ impl Runner {
   }
 
   pub fn set_global(&mut self, key: Symbol, val: Record) {
-    self.root_scope.set(key, val);
+    let scope = &self.root_scope;
+    scope.borrow_mut().set(key, val);
   }
 
   pub fn set_local(&mut self, key: Symbol, val: Record) {
@@ -77,7 +82,9 @@ impl Runner {
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
-    match self.root_scope.resolve(&symbol) {
+    let scope = &self.root_scope;
+    let record = scope.borrow_mut().resolve(&symbol);
+    match record {
       Record::Expression(expr) => { self.eval(&Record::Expression(expr))}
       other => { other }
     }
