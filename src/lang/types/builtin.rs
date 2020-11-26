@@ -3,20 +3,24 @@ use crate::lang::runner::Runner;
 
 use super::{record::Record, symbol::Symbol};
 
-type ApplyFn = fn(&mut Runner, &[Record]) -> Record;
+type Func = fn(&mut Runner, &[Record]) -> Record;
 
 #[derive(Clone)]
 pub struct Builtin {
   pub name: &'static str,
-  pub apply: ApplyFn
+  pub func: Func
 }
 
 impl Builtin {
-  pub fn new(name: &'static str, apply: ApplyFn) -> Builtin {
+  pub fn new(name: &'static str, func: Func) -> Builtin {
     Builtin {
       name,
-      apply
+      func
     }
+  }
+
+  pub fn apply(&self, ctx: &mut Runner, args: &[Record]) -> Record {
+    (self.func)(ctx, args)
   }
 }
 
