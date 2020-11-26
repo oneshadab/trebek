@@ -1,9 +1,6 @@
-use std::fmt;
-use super::{runner::Runner};
+use crate::lang::runner::Runner;
 
-pub type Builtin = fn(&mut Runner, &[Record]) -> Record;
-pub type Symbol = String;
-pub type Expression = String;
+use super::{expression::Expression, record::Record, symbol::Symbol};
 
 #[derive(Debug, Clone)]
 pub struct Function {
@@ -24,13 +21,4 @@ impl Function {
     let expr = Record::Expression(self.body.clone());
     ctx.eval(&expr)
   }
-}
-
-#[derive(Debug, Clone)]
-pub enum Record {
-  Function(Function),
-  Builtin(Builtin),
-  Symbol(Symbol),
-  Expression(Expression),
-  Empty
 }

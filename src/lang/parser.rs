@@ -1,4 +1,5 @@
-use super::types::{Expression, Record};
+use super::types::{expression::Expression, record::Record};
+
 
 pub struct Parser {
 }

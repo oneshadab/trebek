@@ -1,4 +1,4 @@
-use super::{types::Record, runner::Runner};
+use super::{types::record::Record, runner::Runner};
 
 
 pub fn add(ctx: &mut Runner, args: &[Record]) -> Record {

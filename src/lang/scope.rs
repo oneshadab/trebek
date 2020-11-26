@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use super::types::{Record, Symbol};
+
+use super::types::{record::Record, symbol::Symbol};
 
 
 pub struct Scope {

@@ -1,4 +1,4 @@
-use super::{builtins, parser::Parser, scope::Scope, types::Expression, types::{Record, Symbol}};
+use super::{types::expression::Expression, builtins, parser::Parser, scope::Scope, types::{record::Record, symbol::Symbol}};
 pub struct Runner {
   pub root_scope: Scope,
   pub current_scope: Scope
