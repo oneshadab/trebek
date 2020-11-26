@@ -9,6 +9,13 @@ pub struct Function {
 }
 
 impl Function {
+  pub fn new(params: Vec<Symbol>, body: Expression) -> Function {
+    Function {
+      params,
+      body
+    }
+  }
+
   pub fn apply(&self, ctx: &mut Runner, args: Vec<Record>) -> Record {
     if self.params.len() != args.len() {
       panic!("Function called with incorrect number of params!")

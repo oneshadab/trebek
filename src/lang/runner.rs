@@ -66,12 +66,15 @@ impl Runner {
     let func_record = &records[0];
     let arg_records = &records[1..];
 
-    let func = match self.eval(func_record) {
-      Record::Builtin(func) => { func }
+    match self.eval(func_record) {
+      Record::Builtin(builtin) => {
+        builtin.apply(self, arg_records.into())
+      }
+      Record::Function(func) => {
+        func.apply(self, arg_records.into())
+      }
       other => { panic!("{:?} is not a function", other) }
-    };
-
-    (func.apply)(self, arg_records)
+    }
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
