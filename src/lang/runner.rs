@@ -25,7 +25,7 @@ impl Runner {
 
     let mut out = Record::Empty;
     for expr in exprs {
-      println!("{}", expr);
+      println!("Executing expression: '{}'", expr);
       out = self.eval(expr);
     }
     return out;

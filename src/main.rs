@@ -5,11 +5,13 @@ use lang::{runner::Runner};
 
 fn main() {
     let program = String::from("
-        (+ 1 2)
+        (def x 2)
+        (def y 3)
+        (+ x y)
     ");
 
     let mut runner = Runner::new();
-    let output = runner.eval(program);
+    let output = runner.run(program);
 
     println!("{:?}", output);
 }
