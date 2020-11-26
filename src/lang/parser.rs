@@ -5,7 +5,7 @@ impl Parser {
     Parser {}
   }
 
-  pub fn tokenize(&self, expr: String) -> Vec<String> {
+  pub fn tokenize(&self, expr: &String) -> Vec<String> {
     let mut tokens = Vec::new();
 
     let mut flush = |buffer: &mut Vec<char>| {
@@ -19,15 +19,25 @@ impl Parser {
     };
 
     let mut buffer = Vec::new();
-    let trimmed_expr = self.trim(&expr);
-    for ch in trimmed_expr.chars() {
-      if self.is_white_space(ch) {
+    let mut depth = 0;
+
+    for ch in expr.chars() {
+      if ch == '(' {
+        depth += 1;
+      }
+
+      if ch == ')' {
+        depth -= 1;
+      }
+
+      if depth == 0 && self.is_white_space(ch) {
         flush(&mut buffer);
       }
       else {
         buffer.push(ch);
       }
     }
+
     flush(&mut buffer);
 
     return tokens;
@@ -38,7 +48,7 @@ impl Parser {
     return whitespace_chars.contains(&ch);
   }
 
-  fn trim(&self, expr: &String) -> String {
+  pub fn trim(&self, expr: &String) -> String {
     let char_buffer: Vec<_> = expr.chars().collect();
 
     let mut new_start = 0;
