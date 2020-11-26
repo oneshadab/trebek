@@ -51,7 +51,7 @@ impl Runner {
 
   fn eval_expression(&mut self, expr: &Expression) -> Record {
     let mut parser = Parser::new();
-    let records = parser.tokenize(&parser.trim(&expr));
+    let records = parser.tokenize(&parser.trim_expression(&expr));
 
     let func_record = &records[0];
     let arg_records = &records[1..];

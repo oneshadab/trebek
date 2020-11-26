@@ -7,7 +7,7 @@ fn main() {
     let program = String::from("
         (def x 2)
         (def y 3)
-        (+ x y)
+        (print (+ x y))
     ");
 
     let mut runner = Runner::new();

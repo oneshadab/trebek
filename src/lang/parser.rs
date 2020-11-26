@@ -1,4 +1,4 @@
-use super::types::Record;
+use super::types::{Expression, Record};
 
 pub struct Parser {
 }
@@ -15,14 +15,6 @@ impl Parser {
     let mut depth = 0;
 
     for ch in text.chars() {
-      if ch == '(' {
-        depth += 1;
-      }
-
-      if ch == ')' {
-        depth -= 1;
-      }
-
       if depth == 0 && self.is_white_space(ch) {
         if !buffer.is_empty() {
           records.push( self.to_record(&buffer) );
@@ -30,6 +22,14 @@ impl Parser {
         }
       }
       else {
+        if ch == '(' {
+          depth += 1;
+        }
+
+        if ch == ')' {
+          depth -= 1;
+        }
+
         buffer.push(ch);
       }
     }
@@ -39,6 +39,7 @@ impl Parser {
       buffer.clear();
     }
 
+    println!("Records: {} -> {:?}", text, records);
     return records;
   }
 
@@ -47,21 +48,25 @@ impl Parser {
     return whitespace_chars.contains(&ch);
   }
 
-  pub fn trim(&self, expr: &String) -> String {
+  pub fn trim_expression(&self, expr: &Expression) -> String {
     let char_buffer: Vec<_> = expr.chars().collect();
 
     let mut new_start = 0;
-    while self.is_white_space(char_buffer[new_start]) || char_buffer[new_start] == '(' {
+    while self.is_white_space(char_buffer[new_start]) {
       new_start += 1;
     }
 
     let mut new_end = char_buffer.len() - 1;
-    while self.is_white_space(char_buffer[new_end]) || char_buffer[new_end] == ')' {
+    while self.is_white_space(char_buffer[new_end]) {
       new_end -= 1;
     }
 
-    let trimmed_buffer = char_buffer[new_start .. new_end+1].to_vec();
-    return trimmed_buffer.into_iter().collect();
+    let trimmed_buffer = &char_buffer[new_start .. new_end+1];
+    match &trimmed_buffer {
+      ['(', inside @ .., ')'] => { inside.iter().collect() }
+      [] => { String::from("") }
+      _ => { panic!("{} is not an expression!", expr) }
+    }
   }
 
   fn to_record(&mut self, buffer: &Vec<char>) -> Record {
