@@ -43,6 +43,10 @@ impl Parser {
     return records;
   }
 
+  pub fn tokenize_expression(&mut self, expr: &Expression) -> Vec<Record>{
+    self.tokenize(&self.trim_expression(expr))
+  }
+
   fn is_white_space(&self, ch: char) -> bool {
     let whitespace_chars = [' ', '\t', '\n'];
     return whitespace_chars.contains(&ch);
