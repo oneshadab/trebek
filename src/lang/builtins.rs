@@ -1,10 +1,11 @@
-use super::{types::Record, scope::Scope};
+use super::{types::Record, runner::Runner};
 
-pub fn add(scope: &mut Scope, args: Vec<String>) -> Record {
+
+pub fn add(ctx: &mut Runner, args: Vec<String>) -> Record {
   match &args[..] {
     [arg, other_arg] => {
-      let val = scope.resolve(arg);
-      let other_val = scope.resolve(other_arg);
+      let val = ctx.eval(Record::Symbol(arg.into()));
+      let other_val = ctx.eval(Record::Symbol(other_arg.into()));
 
       match (val, other_val) {
         (Record::Symbol(a), Record::Symbol(b)) => {
@@ -25,11 +26,11 @@ pub fn add(scope: &mut Scope, args: Vec<String>) -> Record {
   }
 }
 
-pub fn def(scope: &mut Scope, args: Vec<String>) -> Record {
+pub fn def(ctx: &mut Runner, args: Vec<String>) -> Record {
   match &args[..] {
     [symbol, val] => {
       let entry = Record::Symbol(val.clone());
-      scope.set(symbol.clone(), entry);
+      ctx.root_scope.set(symbol.clone(), entry);
 
       return Record::Empty;
     }
@@ -39,10 +40,11 @@ pub fn def(scope: &mut Scope, args: Vec<String>) -> Record {
   }
 }
 
-pub fn print(scope: &mut Scope, args: Vec<String>) -> Record {
+pub fn print(ctx: &mut Runner, args: Vec<String>) -> Record {
   match &args[..] {
     [symbol] => {
-      println!("{:?}", scope.resolve(symbol));
+      let val = ctx.eval(Record::Symbol(symbol.into()));
+      println!("{:?}", val);
       Record::Empty
     }
     _ => {
