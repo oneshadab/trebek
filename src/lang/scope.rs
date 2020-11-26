@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use super::types::{record::Record, symbol::Symbol};
 
-
+#[derive(Debug)]
 pub struct Scope {
   records: HashMap<Symbol, Record>
 }

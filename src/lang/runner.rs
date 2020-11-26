@@ -51,11 +51,10 @@ impl Runner {
 
   pub fn eval(&mut self, record: &Record) -> Record {
     match record {
-      Record::Function(_) => { panic!("Function eval not supported!") }
-      Record::Builtin(_) => { panic!("Builtin eval not supported!") }
       Record::Expression(expr) => { self.eval_expression(expr) }
       Record::Symbol(symbol) => { self.eval_symbol(symbol) }
       Record::Empty => {Record::Empty}
+      other => { panic!("{:?} evaluation is not supported", other)}
     }
   }
 
@@ -78,7 +77,9 @@ impl Runner {
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
-    self.root_scope.resolve(&symbol)
+    match self.root_scope.resolve(&symbol) {
+      Record::Expression(expr) => { self.eval(&Record::Expression(expr))}
+      other => { other }
+    }
   }
-
 }
