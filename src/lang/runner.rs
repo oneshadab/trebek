@@ -51,21 +51,21 @@ impl Runner {
 
   fn eval_expression(&mut self, expr: &Expression) -> Record {
     let mut parser = Parser::new();
-    let tokens = parser.tokenize(&parser.trim(&expr));
+    let records = parser.tokenize(&parser.trim(&expr));
 
-    let args: Vec<Record> = tokens[1..].into();
+    let func_record = &records[0];
+    let arg_records = &records[1..];
 
-    match self.eval(&tokens[0]) {
-      Record::Function(func) => {
-        func(self, args)
-      }
-      other => {
-        panic!("{:?} is not a function", other)
-      }
-    }
+    let func = match self.eval(func_record) {
+      Record::Function(func) => { func }
+      other => { panic!("{:?} is not a function", other) }
+    };
+
+    func(self, arg_records)
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
     self.root_scope.resolve(&symbol)
   }
+
 }

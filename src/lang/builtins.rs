@@ -1,8 +1,8 @@
 use super::{types::Record, runner::Runner};
 
 
-pub fn add(ctx: &mut Runner, args: Vec<Record>) -> Record {
-  match &args[..] {
+pub fn add(ctx: &mut Runner, args: &[Record]) -> Record {
+  match args {
     [arg, other_arg] => {
       let val = ctx.eval(arg);
       let other_val = ctx.eval(other_arg);
@@ -26,8 +26,8 @@ pub fn add(ctx: &mut Runner, args: Vec<Record>) -> Record {
   }
 }
 
-pub fn def(ctx: &mut Runner, args: Vec<Record>) -> Record {
-  match &args[..] {
+pub fn def(ctx: &mut Runner, args: &[Record]) -> Record {
+  match args {
     [Record::Symbol(symbol), val] => {
       ctx.root_scope.set(symbol.clone(), val.clone());
 
@@ -39,8 +39,8 @@ pub fn def(ctx: &mut Runner, args: Vec<Record>) -> Record {
   }
 }
 
-pub fn print(ctx: &mut Runner, args: Vec<Record>) -> Record {
-  match &args[..] {
+pub fn print(ctx: &mut Runner, args: &[Record]) -> Record {
+  match args {
     [symbol] => {
       let val = ctx.eval(symbol);
       println!("{:?}", val);
