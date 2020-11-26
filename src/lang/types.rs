@@ -15,7 +15,7 @@ pub enum Record {
 impl fmt::Debug for Record {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      Record::Function(func) => {
+      Record::Function(_) => {
         f.debug_struct("[Function]").finish()
       }
       Record::Symbol(symbol) => {
