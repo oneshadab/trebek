@@ -2,17 +2,20 @@ use std::{rc::Rc, cell::RefCell};
 
 use super::{builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
 pub struct Runner  {
-  pub root_scope: Rc<RefCell<Scope>>,
-  pub current_scope: Rc<RefCell<Scope>>
+  scopes: Vec<Scope>,
+
+  pub root_scope_id: usize,
+  pub current_scope_id: usize
 }
 
 impl Runner {
   pub fn new() -> Runner {
-    let scope = Rc::new(RefCell::new(Scope::new(None)));
+    let scopes = vec![Scope::new(None)];
 
     let mut runner = Runner {
-      root_scope: scope.clone(),
-      current_scope: scope.clone()
+      scopes,
+      root_scope_id: 0,
+      current_scope_id: 0,
     };
 
     runner.init_builtins();
@@ -44,14 +47,20 @@ impl Runner {
     return out;
   }
 
+  pub fn root_scope(&mut self) -> &mut Scope{
+    &mut self.scopes[self.root_scope_id]
+  }
+
+  pub fn current_scope(&mut self) -> &mut Scope{
+    &mut self.scopes[self.current_scope_id]
+  }
+
   pub fn set_global(&mut self, key: Symbol, val: Record) {
-    let scope = &self.root_scope;
-    scope.borrow_mut().set(key, val);
+    self.root_scope().set(key, val);
   }
 
   pub fn set_local(&mut self, key: Symbol, val: Record) {
-    // To-do: Introduce local scope
-    self.set_global(key, val)
+    self.current_scope().set(key, val);
   }
 
   pub fn eval(&mut self, record: &Record) -> Record {
@@ -70,23 +79,33 @@ impl Runner {
     let func_record = &records[0];
     let arg_records = &records[1..];
 
-    match self.eval(func_record) {
-      Record::Builtin(builtin) => {
-        builtin.apply(self, arg_records.into())
-      }
-      Record::Function(func) => {
-        func.apply(self, arg_records.into())
-      }
+    self.push_scope();
+
+    let output = match self.eval(func_record) {
+      Record::Builtin(builtin) => { builtin.apply(self, arg_records.into()) }
+      Record::Function(func) => { func.apply(self, arg_records.into()) }
       other => { panic!("{:?} is not a function", other) }
-    }
+    };
+
+    self.pop_scope();
+
+    output
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
-    let scope = &self.root_scope;
-    let record = scope.borrow_mut().resolve(&symbol);
+    let record = self.current_scope().resolve(&symbol);
     match record {
       Record::Expression(expr) => { self.eval(&Record::Expression(expr))}
       other => { other }
     }
+  }
+
+  fn push_scope(&mut self) {
+    self.scopes.push(Scope::new(Some(self.current_scope_id)));
+    self.current_scope_id = self.scopes.len() - 1;
+  }
+
+  fn pop_scope(&mut self) {
+    self.current_scope_id = self.current_scope().parent_scope_id.unwrap();
   }
 }

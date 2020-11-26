@@ -1,17 +1,17 @@
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc, cell::RefCell};
 
 use super::types::{record::Record, symbol::Symbol};
 
 #[derive(Debug)]
 pub struct Scope {
-  pub parent_scope: Option<Rc<Scope>>,
+  pub parent_scope_id: Option<usize>,
   pub records: HashMap<Symbol, Record>
 }
 
 impl Scope {
-  pub fn new(parent_scope: Option<Rc<Scope>>) -> Scope {
+  pub fn new(parent_scope_id: Option<usize>) -> Scope {
     Scope {
-      parent_scope,
+      parent_scope_id,
       records: HashMap::new()
     }
   }
