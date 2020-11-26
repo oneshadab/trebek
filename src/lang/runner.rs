@@ -40,9 +40,19 @@ impl Runner {
     return out;
   }
 
+  pub fn set_global(&mut self, key: Symbol, val: Record) {
+    self.root_scope.set(key, val);
+  }
+
+  pub fn set_local(&mut self, key: Symbol, val: Record) {
+    // To-do: Introduce local scope
+    self.set_global(key, val)
+  }
+
   pub fn eval(&mut self, record: &Record) -> Record {
     match record {
-      Record::Builtin(_) => { panic!("Function eval not supported!")}
+      Record::Function(_) => { panic!("Function eval not supported!") }
+      Record::Builtin(_) => { panic!("Builtin eval not supported!") }
       Record::Expression(expr) => { self.eval_expression(expr) }
       Record::Symbol(symbol) => { self.eval_symbol(symbol) }
       Record::Empty => {Record::Empty}

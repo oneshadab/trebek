@@ -29,7 +29,7 @@ pub fn add(ctx: &mut Runner, args: &[Record]) -> Record {
 pub fn def(ctx: &mut Runner, args: &[Record]) -> Record {
   match args {
     [Record::Symbol(symbol), val] => {
-      ctx.root_scope.set(symbol.clone(), val.clone());
+      ctx.set_global(symbol.clone(), val.clone());
 
       return Record::Empty;
     }
