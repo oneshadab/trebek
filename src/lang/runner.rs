@@ -1,4 +1,4 @@
-use super::{types::Expression, builtins, parser::Parser, scope::Scope, types::Record};
+use super::{builtins, parser::Parser, scope::Scope, types::Expression, types::{Record, Symbol}};
 pub struct Runner {
   pub root_scope: Scope,
   pub current_scope: Scope
@@ -27,7 +27,7 @@ impl Runner {
 
     let mut out = Record::Empty;
     for expr in exprs {
-      println!("Executing expression: '{}'", expr);
+      println!("[Executing expression]: '{}'", expr);
       out = self.eval(Record::Expression(expr));
     }
     return out;
@@ -37,7 +37,7 @@ impl Runner {
     match record {
       Record::Function(func) => { panic!("Function eval not supported!")}
       Record::Expression(expr) => { self.eval_expression(expr) }
-      Record::Symbol(symbol) => { panic!("Function eval not supported!") }
+      Record::Symbol(symbol) => { self.eval_symbol(symbol) }
       Record::Empty => {Record::Empty}
     }
   }
@@ -69,5 +69,9 @@ impl Runner {
         panic!("Function not found!")
       }
     }
+  }
+
+  fn eval_symbol(&mut self, symbol: Symbol) -> Record {
+    self.root_scope.resolve(&symbol)
   }
 }
