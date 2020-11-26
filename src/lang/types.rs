@@ -5,47 +5,32 @@ pub type Builtin = fn(&mut Runner, &[Record]) -> Record;
 pub type Symbol = String;
 pub type Expression = String;
 
+#[derive(Debug, Clone)]
+pub struct Function {
+  params: Vec<Symbol>,
+  body: Expression
+}
+
+impl Function {
+  pub fn apply(&self, ctx: &mut Runner, args: Vec<Record>) -> Record {
+    if self.params.len() != args.len() {
+      panic!("Function called with incorrect number of params!")
+    }
+
+    for (i, _) in self.params.iter().enumerate() {
+      ctx.set_local(self.params[i].clone(), args[i].clone());
+    }
+
+    let expr = Record::Expression(self.body.clone());
+    ctx.eval(&expr)
+  }
+}
+
+#[derive(Debug, Clone)]
 pub enum Record {
+  Function(Function),
   Builtin(Builtin),
   Symbol(Symbol),
   Expression(Expression),
   Empty
-}
-
-impl fmt::Debug for Record {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      Record::Builtin(_) => {
-        f.debug_struct("[Function]").finish()
-      }
-      Record::Symbol(symbol) => {
-        f.debug_struct(symbol).finish()
-      }
-      Record::Expression(expr) => {
-        f.debug_struct(expr).finish()
-      }
-      Record::Empty => {
-        f.debug_struct("").finish()
-      }
-    }
-  }
-}
-
-impl Clone for Record {
-  fn clone(&self) -> Self {
-      match self {
-          Record::Builtin(func) => {
-            Record::Builtin(*func)
-          }
-          Record::Symbol(symbol) => {
-            Record::Symbol(symbol.into())
-          }
-          Record::Expression(expr) => {
-            Record::Expression(expr.into())
-          }
-          Record::Empty => {
-            Record::Empty
-          }
-      }
-  }
 }
