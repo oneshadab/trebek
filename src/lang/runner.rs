@@ -17,9 +17,9 @@ impl Runner {
   }
 
   fn init_builtins(&mut self) {
-    self.root_scope.set(String::from("+"), Record::Function(builtins::add));
-    self.root_scope.set(String::from("def"), Record::Function(builtins::def));
-    self.root_scope.set(String::from("print"), Record::Function(builtins::print));
+    self.root_scope.set(String::from("+"), Record::Builtin(builtins::add));
+    self.root_scope.set(String::from("def"), Record::Builtin(builtins::def));
+    self.root_scope.set(String::from("print"), Record::Builtin(builtins::print));
   }
 
   pub fn run(&mut self, program: String) -> Record {
@@ -42,7 +42,7 @@ impl Runner {
 
   pub fn eval(&mut self, record: &Record) -> Record {
     match record {
-      Record::Function(_) => { panic!("Function eval not supported!")}
+      Record::Builtin(_) => { panic!("Function eval not supported!")}
       Record::Expression(expr) => { self.eval_expression(expr) }
       Record::Symbol(symbol) => { self.eval_symbol(symbol) }
       Record::Empty => {Record::Empty}
@@ -57,7 +57,7 @@ impl Runner {
     let arg_records = &records[1..];
 
     let func = match self.eval(func_record) {
-      Record::Function(func) => { func }
+      Record::Builtin(func) => { func }
       other => { panic!("{:?} is not a function", other) }
     };
 

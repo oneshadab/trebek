@@ -1,12 +1,12 @@
 use std::fmt;
 use super::{runner::Runner};
 
-pub type Function = fn(&mut Runner, &[Record]) -> Record;
+pub type Builtin = fn(&mut Runner, &[Record]) -> Record;
 pub type Symbol = String;
 pub type Expression = String;
 
 pub enum Record {
-  Function(Function),
+  Builtin(Builtin),
   Symbol(Symbol),
   Expression(Expression),
   Empty
@@ -15,7 +15,7 @@ pub enum Record {
 impl fmt::Debug for Record {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      Record::Function(_) => {
+      Record::Builtin(_) => {
         f.debug_struct("[Function]").finish()
       }
       Record::Symbol(symbol) => {
@@ -34,8 +34,8 @@ impl fmt::Debug for Record {
 impl Clone for Record {
   fn clone(&self) -> Self {
       match self {
-          Record::Function(func) => {
-            Record::Function(*func)
+          Record::Builtin(func) => {
+            Record::Builtin(*func)
           }
           Record::Symbol(symbol) => {
             Record::Symbol(symbol.into())
