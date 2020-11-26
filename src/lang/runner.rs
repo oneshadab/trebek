@@ -93,7 +93,9 @@ impl Runner {
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
-    let record = self.current_scope().resolve(&symbol);
+    let default = Record::Symbol(symbol.clone().into());
+    let record = self.recursive_lookup(symbol).unwrap_or(default);
+
     match record {
       Record::Expression(expr) => { self.eval(&Record::Expression(expr))}
       other => { other }
@@ -107,5 +109,20 @@ impl Runner {
 
   fn pop_scope(&mut self) {
     self.current_scope_id = self.current_scope().parent_scope_id.unwrap();
+  }
+
+  fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<Record> {
+    let mut scope = &self.scopes[self.current_scope_id];
+    loop {
+      if let Some(record) = scope.lookup(symbol) {
+        return Some(record);
+      }
+
+      if let None = scope.parent_scope_id {
+        return None;
+      }
+
+      scope = &self.scopes[scope.parent_scope_id.unwrap()];
+    }
   }
 }
