@@ -13,16 +13,16 @@ impl Scope {
     }
   }
 
-  pub fn set(&mut self, key: String, val: Record) {
+  pub fn set(&mut self, key: Symbol, val: Record) {
     self.records.insert(key, val);
   }
 
-  pub fn resolve(&self, key: &String) -> Record {
+  pub fn resolve(&self, key: &Symbol) -> Record {
     let default = Record::Symbol(key.clone().into());
     return self.lookup(key).unwrap_or(default);
   }
 
-  pub fn lookup(&self, key: &String) -> Option<Record>{
+  pub fn lookup(&self, key: &Symbol) -> Option<Record>{
     return self.records.get(key).cloned();
   }
 }
