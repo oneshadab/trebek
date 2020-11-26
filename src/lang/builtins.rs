@@ -2,15 +2,25 @@ use super::{types::Record, scope::Scope};
 
 pub fn add(scope: &mut Scope, args: Vec<String>) -> Record {
   match &args[..] {
-    [a, b] => {
-      let i_a: i32 = a.parse().unwrap();
-      let i_b: i32 = b.parse().unwrap();
-      let i_result = i_a + i_b;
+    [arg, other_arg] => {
+      let val = scope.resolve(arg);
+      let other_val = scope.resolve(other_arg);
 
-      return Record::Symbol(i_result.to_string());
+      match (val, other_val) {
+        (Record::Symbol(a), Record::Symbol(b)) => {
+          let i_a: i32 = a.parse().unwrap();
+          let i_b: i32 = b.parse().unwrap();
+          let i_result = i_a + i_b;
+
+          return Record::Symbol(i_result.to_string());
+        }
+        _ => {
+          panic!("'add' called with incorrect params")
+        }
+      }
     }
     _ => {
-      panic!("Function called with incorrect number of args")
+      panic!("'add' called with incorrect number of args")
     }
   }
 }
@@ -24,7 +34,7 @@ pub fn def(scope: &mut Scope, args: Vec<String>) -> Record {
       return Record::Empty;
     }
     _ => {
-      panic!("Function called with incorrect number of args")
+      panic!("'def' called with incorrect number of args")
     }
   }
 }
@@ -32,11 +42,11 @@ pub fn def(scope: &mut Scope, args: Vec<String>) -> Record {
 pub fn print(scope: &mut Scope, args: Vec<String>) -> Record {
   match &args[..] {
     [symbol] => {
-      println!("{}", symbol);
+      println!("{:?}", scope.resolve(symbol));
       Record::Empty
     }
     _ => {
-      panic!("Function called with incorrect number of args")
+      panic!("'print' called with incorrect number of args")
     }
   }
 }
