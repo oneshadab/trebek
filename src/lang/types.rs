@@ -1,7 +1,7 @@
 use std::fmt;
 use super::{runner::Runner};
 
-pub type Function = fn(&mut Runner, Vec<String>) -> Record;
+pub type Function = fn(&mut Runner, Vec<Record>) -> Record;
 pub type Symbol = String;
 pub type Expression = String;
 

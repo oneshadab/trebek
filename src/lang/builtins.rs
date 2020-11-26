@@ -1,11 +1,11 @@
 use super::{types::Record, runner::Runner};
 
 
-pub fn add(ctx: &mut Runner, args: Vec<String>) -> Record {
+pub fn add(ctx: &mut Runner, args: Vec<Record>) -> Record {
   match &args[..] {
     [arg, other_arg] => {
-      let val = ctx.eval(Record::Symbol(arg.into()));
-      let other_val = ctx.eval(Record::Symbol(other_arg.into()));
+      let val = ctx.eval(arg);
+      let other_val = ctx.eval(other_arg);
 
       match (val, other_val) {
         (Record::Symbol(a), Record::Symbol(b)) => {
@@ -26,11 +26,10 @@ pub fn add(ctx: &mut Runner, args: Vec<String>) -> Record {
   }
 }
 
-pub fn def(ctx: &mut Runner, args: Vec<String>) -> Record {
+pub fn def(ctx: &mut Runner, args: Vec<Record>) -> Record {
   match &args[..] {
-    [symbol, val] => {
-      let entry = Record::Symbol(val.clone());
-      ctx.root_scope.set(symbol.clone(), entry);
+    [Record::Symbol(symbol), val] => {
+      ctx.root_scope.set(symbol.clone(), val.clone());
 
       return Record::Empty;
     }
@@ -40,10 +39,10 @@ pub fn def(ctx: &mut Runner, args: Vec<String>) -> Record {
   }
 }
 
-pub fn print(ctx: &mut Runner, args: Vec<String>) -> Record {
+pub fn print(ctx: &mut Runner, args: Vec<Record>) -> Record {
   match &args[..] {
     [symbol] => {
-      let val = ctx.eval(Record::Symbol(symbol.into()));
+      let val = ctx.eval(symbol);
       println!("{:?}", val);
       Record::Empty
     }
