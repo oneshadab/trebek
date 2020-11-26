@@ -1,3 +1,5 @@
+use super::types::Record;
+
 pub struct Parser {}
 
 impl Parser {
@@ -5,7 +7,7 @@ impl Parser {
     Parser {}
   }
 
-  pub fn tokenize(&self, expr: &String) -> Vec<String> {
+  pub fn tokenize(&self, text: &String) -> Vec<Record> {
     let mut tokens = Vec::new();
 
     let mut flush = |buffer: &mut Vec<char>| {
@@ -13,7 +15,7 @@ impl Parser {
         return ;
       }
 
-      let token= buffer.clone().iter().collect();
+      let token= Record::Expression(buffer.clone().iter().collect());
       tokens.push(token);
       buffer.clear();
     };
@@ -21,7 +23,7 @@ impl Parser {
     let mut buffer = Vec::new();
     let mut depth = 0;
 
-    for ch in expr.chars() {
+    for ch in text.chars() {
       if ch == '(' {
         depth += 1;
       }
