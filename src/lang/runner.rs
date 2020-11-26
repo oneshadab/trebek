@@ -20,13 +20,25 @@ impl Runner {
     self.root_scope.set(String::from("print"), Record::Function(builtins::print));
   }
 
+  pub fn run(&mut self, program: String) -> Record {
+    let exprs = Parser::new().tokenize(&program);
+
+    let mut out = Record::Empty;
+    for expr in exprs {
+      println!("{}", expr);
+      out = self.eval(expr);
+    }
+    return out;
+  }
+
   pub fn eval(&mut self, expr: String) -> Record {
-    let tokens = Parser::new().tokenize(expr);
+    let parser = Parser::new();
+    let tokens = parser.tokenize(&parser.trim(&expr));
 
     let func_name = &tokens[0];
     let args: Vec<String> = tokens[1..].into();
 
-    match self.root_scope.resolve(func_name) {
+    match self.root_scope.lookup(func_name) {
       Some(record) => {
         match record {
           Record::Function(func) => {
