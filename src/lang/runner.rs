@@ -1,4 +1,4 @@
-use super::{types::expression::Expression, builtins, parser::Parser, scope::Scope, types::{record::Record, symbol::Symbol}};
+use super::{builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
 pub struct Runner {
   pub root_scope: Scope,
   pub current_scope: Scope
@@ -17,9 +17,9 @@ impl Runner {
   }
 
   fn init_builtins(&mut self) {
-    self.root_scope.set(String::from("+"), Record::Builtin(builtins::add));
-    self.root_scope.set(String::from("def"), Record::Builtin(builtins::def));
-    self.root_scope.set(String::from("print"), Record::Builtin(builtins::print));
+    for builtin in builtins::get_builtins() {
+      self.set_global(builtin.name.into(), Record::Builtin(builtin));
+    }
   }
 
   pub fn run(&mut self, program: String) -> Record {

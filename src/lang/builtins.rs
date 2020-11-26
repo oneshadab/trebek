@@ -1,5 +1,4 @@
-use super::{types::record::Record, runner::Runner};
-
+use super::{runner::Runner, types::{builtin::Builtin, record::Record}};
 
 pub fn add(ctx: &mut Runner, args: &[Record]) -> Record {
   match args {
@@ -50,4 +49,12 @@ pub fn print(ctx: &mut Runner, args: &[Record]) -> Record {
       panic!("'print' called with incorrect number of args")
     }
   }
+}
+
+pub fn get_builtins() -> Vec<Builtin> {
+  vec![
+    Builtin::new("+".into(), add),
+    Builtin::new("def".into(), def),
+    Builtin::new("print".into(), print),
+  ]
 }
