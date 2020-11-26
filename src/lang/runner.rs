@@ -1,12 +1,14 @@
-use super::{types::Record, parser::Parser, scope::Scope, builtins};
+use super::{types::Expression, builtins, parser::Parser, scope::Scope, types::Record};
 pub struct Runner {
-  root_scope: Scope
+  pub root_scope: Scope,
+  pub current_scope: Scope
 }
 
 impl Runner {
   pub fn new() -> Runner{
-    let mut runner =  Runner {
-      root_scope: Scope::new()
+    let mut runner = Runner {
+      root_scope: Scope::new(),
+      current_scope: Scope::new()
     };
 
     runner.init_builtins();
@@ -26,23 +28,31 @@ impl Runner {
     let mut out = Record::Empty;
     for expr in exprs {
       println!("Executing expression: '{}'", expr);
-      out = self.eval(expr);
+      out = self.eval(Record::Expression(expr));
     }
     return out;
   }
 
-  pub fn eval(&mut self, expr: String) -> Record {
+  pub fn eval(&mut self, record: Record) -> Record {
+    match record {
+      Record::Function(func) => { panic!("Function eval not supported!")}
+      Record::Expression(expr) => { self.eval_expression(expr) }
+      Record::Symbol(symbol) => { panic!("Function eval not supported!") }
+      Record::Empty => {Record::Empty}
+    }
+  }
+
+  fn eval_expression(&mut self, expr: Expression) -> Record {
     let parser = Parser::new();
     let tokens = parser.tokenize(&parser.trim(&expr));
 
     let func_name = &tokens[0];
     let args: Vec<String> = tokens[1..].into();
-
     match self.root_scope.lookup(func_name) {
       Some(record) => {
         match record {
           Record::Function(func) => {
-            func(&mut self.root_scope, args)
+            func(self, args)
           },
           Record::Symbol(symbol) => {
             panic!("Symbol is not callable")
