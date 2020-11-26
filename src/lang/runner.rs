@@ -1,4 +1,4 @@
-use super::{builtins, parser::Parser, scope::Scope, types::Expression, types::{Record, Symbol}};
+use super::{types::Function, builtins, parser::Parser, scope::Scope, types::Expression, types::{Record, Symbol}};
 pub struct Runner {
   pub root_scope: Scope,
   pub current_scope: Scope
@@ -27,13 +27,20 @@ impl Runner {
 
     let mut out = Record::Empty;
     for expr in exprs {
-      println!("[Executing expression]: '{}'", expr);
-      out = self.eval(Record::Expression(expr));
+      match expr {
+        Record::Expression(expr) => {
+          println!("[Executing expression]: '{}'", expr);
+          out = self.eval(&Record::Expression(expr));
+        }
+        r => {
+          panic!("{:?} is not an expression", r)
+        }
+      }
     }
     return out;
   }
 
-  pub fn eval(&mut self, record: Record) -> Record {
+  pub fn eval(&mut self, record: &Record) -> Record {
     match record {
       Record::Function(func) => { panic!("Function eval not supported!")}
       Record::Expression(expr) => { self.eval_expression(expr) }
@@ -42,36 +49,23 @@ impl Runner {
     }
   }
 
-  fn eval_expression(&mut self, expr: Expression) -> Record {
+  fn eval_expression(&mut self, expr: &Expression) -> Record {
     let parser = Parser::new();
     let tokens = parser.tokenize(&parser.trim(&expr));
 
-    let func_name = &tokens[0];
-    let args: Vec<String> = tokens[1..].into();
-    match self.root_scope.lookup(func_name) {
-      Some(record) => {
-        match record {
-          Record::Function(func) => {
-            func(self, args)
-          },
-          Record::Symbol(symbol) => {
-            panic!("Symbol is not callable")
-          },
-          Record::Expression(expr) => {
-            panic!("Expression calling isn't supported (yet)")
-          },
-          Record::Empty => {
-            Record::Empty
-          }
-        }
+    let args: Vec<Record> = tokens[1..].into();
+
+    match self.eval(&tokens[0]) {
+      Record::Function(func) => {
+        func(self, args)
       }
-      None => {
-        panic!("Function not found!")
+      other => {
+        panic!("{:?} is not a function", other)
       }
     }
   }
 
-  fn eval_symbol(&mut self, symbol: Symbol) -> Record {
+  fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
     self.root_scope.resolve(&symbol)
   }
 }
