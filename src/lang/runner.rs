@@ -50,7 +50,7 @@ impl Runner {
   }
 
   fn eval_expression(&mut self, expr: &Expression) -> Record {
-    let parser = Parser::new();
+    let mut parser = Parser::new();
     let tokens = parser.tokenize(&parser.trim(&expr));
 
     let args: Vec<Record> = tokens[1..].into();

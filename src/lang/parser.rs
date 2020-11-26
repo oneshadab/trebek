@@ -1,26 +1,17 @@
 use super::types::Record;
 
-pub struct Parser {}
+pub struct Parser {
+}
 
 impl Parser {
   pub fn new() -> Parser {
     Parser {}
   }
 
-  pub fn tokenize(&self, text: &String) -> Vec<Record> {
-    let mut tokens = Vec::new();
+  pub fn tokenize(&mut self, text: &String) -> Vec<Record> {
+    let mut records = Vec::new();
 
-    let mut flush = |buffer: &mut Vec<char>| {
-      if buffer.is_empty() {
-        return ;
-      }
-
-      let token= Record::Expression(buffer.clone().iter().collect());
-      tokens.push(token);
-      buffer.clear();
-    };
-
-    let mut buffer = Vec::new();
+    let mut buffer: Vec<char> = Vec::new();
     let mut depth = 0;
 
     for ch in text.chars() {
@@ -33,16 +24,22 @@ impl Parser {
       }
 
       if depth == 0 && self.is_white_space(ch) {
-        flush(&mut buffer);
+        if !buffer.is_empty() {
+          records.push( self.to_record(&buffer) );
+          buffer.clear();
+        }
       }
       else {
         buffer.push(ch);
       }
     }
 
-    flush(&mut buffer);
+    if !buffer.is_empty() {
+      records.push( self.to_record(&buffer) );
+      buffer.clear();
+    }
 
-    return tokens;
+    return records;
   }
 
   fn is_white_space(&self, ch: char) -> bool {
@@ -65,5 +62,21 @@ impl Parser {
 
     let trimmed_buffer = char_buffer[new_start .. new_end+1].to_vec();
     return trimmed_buffer.into_iter().collect();
+  }
+
+  fn to_record(&mut self, buffer: &Vec<char>) -> Record {
+    let token: String = buffer.iter().collect();
+
+    match buffer[..] {
+      [] => {
+        Record::Empty
+      }
+      ['(', .., ')'] => {
+        Record::Expression(token)
+      },
+      _ => {
+        Record::Symbol(token)
+      }
+    }
   }
 }
