@@ -29,7 +29,7 @@ impl Runner {
     for expr in exprs {
       match expr {
         Record::Expression(expr) => {
-          println!("[Executing expression]: '{}'", expr);
+          println!("[DBG] Executing expression: '{}'", expr);
           out = self.eval(&Record::Expression(expr));
         }
         r => {
@@ -71,7 +71,7 @@ impl Runner {
       other => { panic!("{:?} is not a function", other) }
     };
 
-    func(self, arg_records)
+    (func.apply)(self, arg_records)
   }
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
