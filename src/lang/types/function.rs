@@ -22,7 +22,8 @@ impl Function {
     }
 
     for (i, _) in self.params.iter().enumerate() {
-      ctx.set_local(self.params[i].clone(), args[i].clone());
+      let arg_val = ctx.eval(&args[i].clone());
+      ctx.set_local(self.params[i].clone(), arg_val);
     }
 
     let expr = Record::Expression(self.body.clone());

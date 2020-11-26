@@ -8,7 +8,7 @@ fn main() {
         (def x 2)
         (def y 3)
         (def inc (fn (x) (+ x 1)))
-        (print (inc 4))
+        (print (inc x))
     ");
 
     let mut runner = Runner::new();
