@@ -6,6 +6,7 @@ pub fn get_builtins() -> Vec<Builtin> {
     Builtin::new("def", def),
     Builtin::new("print", print),
     Builtin::new("fn", new_function),
+    Builtin::new("if", cond_if),
   ]
 }
 
@@ -78,6 +79,32 @@ pub fn new_function(ctx: &mut Runner, args: &[Record]) -> Record {
 
       let func = Function::new(qualified_params, body.into());
       Record::Function(func)
+    }
+    _ => {
+      panic!("'print' called with incorrect number of args")
+    }
+  }
+}
+
+pub fn cond_if(ctx: &mut Runner, args: &[Record]) -> Record {
+ match args {
+    [
+      cond_expr,
+      true_expr,
+      false_expr
+    ] => {
+      let result = ctx.eval(cond_expr);
+
+      match result {
+        Record::Symbol(symbol) => {
+          match symbol.as_str() {
+            "true" => { ctx.eval(true_expr) }
+            "false" => { ctx.eval(false_expr) }
+            _ => panic!("{:?} is not true/false!", symbol)
+          }
+        }
+        other => { panic!("{:?} is not a boolean!", other) }
+      }
     }
     _ => {
       panic!("'print' called with incorrect number of args")
