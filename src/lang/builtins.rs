@@ -1,4 +1,4 @@
-use super::{types::function::Function, parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
+use super::{constants::{FALSE, TRUE}, parser::Parser, runtime::Runtime, types::function::Function, types::{builtin::Builtin, record::Record}};
 
 pub fn get_builtins() -> Vec<Builtin> {
   vec![
@@ -7,6 +7,7 @@ pub fn get_builtins() -> Vec<Builtin> {
     Builtin::new("print", print),
     Builtin::new("fn", new_function),
     Builtin::new("if", cond_if),
+    Builtin::new("=", is_equal),
   ]
 }
 
@@ -97,9 +98,9 @@ pub fn cond_if(ctx: &mut Runtime, args: &[Record]) -> Record {
 
       match result {
         Record::Symbol(symbol) => {
-          match symbol.as_str() {
-            "true" => { ctx.eval(true_expr) }
-            "false" => { ctx.eval(false_expr) }
+          match symbol {
+            s if s == TRUE => { ctx.eval(true_expr) }
+            s if s == FALSE => { ctx.eval(false_expr) }
             _ => panic!("{:?} is not true/false!", symbol)
           }
         }
@@ -111,3 +112,30 @@ pub fn cond_if(ctx: &mut Runtime, args: &[Record]) -> Record {
     }
   }
 }
+
+pub fn is_equal(ctx: &mut Runtime, args: &[Record]) -> Record {
+  match args {
+     [
+       left_expr,
+       right_expr,
+     ] => {
+       let left = ctx.eval(left_expr);
+       let right = ctx.eval(right_expr);
+
+       match (&left, &right) {
+         (Record::Symbol(lhs), Record::Symbol(rhs)) => {
+           if lhs == rhs {
+             Record::Symbol(TRUE.into())
+           }
+           else {
+             Record::Symbol(FALSE.into())
+           }
+          }
+         _ => { panic!("Cannot compare {:?} and {:?}", left, right) }
+       }
+     }
+     _ => {
+       panic!("'print' called with incorrect number of args")
+     }
+   }
+ }
