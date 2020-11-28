@@ -1,9 +1,9 @@
 use std::fmt;
-use crate::lang::runner::Runner;
+use crate::lang::runtime::Runtime;
 
 use super::{record::Record, symbol::Symbol};
 
-type Func = fn(&mut Runner, &[Record]) -> Record;
+type Func = fn(&mut Runtime, &[Record]) -> Record;
 
 #[derive(Clone)]
 pub struct Builtin {
@@ -19,7 +19,7 @@ impl Builtin {
     }
   }
 
-  pub fn apply(&self, ctx: &mut Runner, args: &[Record]) -> Record {
+  pub fn apply(&self, ctx: &mut Runtime, args: &[Record]) -> Record {
     (self.func)(ctx, args)
   }
 }

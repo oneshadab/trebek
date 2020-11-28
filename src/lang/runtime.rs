@@ -1,26 +1,26 @@
 use std::{rc::Rc, cell::RefCell};
 
 use super::{builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
-pub struct Runner  {
+pub struct Runtime  {
   scopes: Vec<Scope>,
 
   pub root_scope_id: usize,
   pub current_scope_id: usize
 }
 
-impl Runner {
-  pub fn new() -> Runner {
+impl Runtime {
+  pub fn new() -> Runtime {
     let scopes = vec![Scope::new(None)];
 
-    let mut runner = Runner {
+    let mut runtime = Runtime {
       scopes,
       root_scope_id: 0,
       current_scope_id: 0,
     };
 
-    runner.init_builtins();
+    runtime.init_builtins();
 
-    runner
+    runtime
   }
 
   fn init_builtins(&mut self) {

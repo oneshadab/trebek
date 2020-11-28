@@ -1,4 +1,4 @@
-use super::{types::function::Function, parser::Parser, runner::Runner, types::{builtin::Builtin, record::Record}};
+use super::{types::function::Function, parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
 
 pub fn get_builtins() -> Vec<Builtin> {
   vec![
@@ -10,7 +10,7 @@ pub fn get_builtins() -> Vec<Builtin> {
   ]
 }
 
-pub fn add(ctx: &mut Runner, args: &[Record]) -> Record {
+pub fn add(ctx: &mut Runtime, args: &[Record]) -> Record {
   match args {
     [arg, other_arg] => {
       let val = ctx.eval(arg);
@@ -35,7 +35,7 @@ pub fn add(ctx: &mut Runner, args: &[Record]) -> Record {
   }
 }
 
-pub fn def(ctx: &mut Runner, args: &[Record]) -> Record {
+pub fn def(ctx: &mut Runtime, args: &[Record]) -> Record {
   match args {
     [Record::Symbol(symbol), val] => {
       ctx.set_global(symbol.clone(), val.clone());
@@ -48,7 +48,7 @@ pub fn def(ctx: &mut Runner, args: &[Record]) -> Record {
   }
 }
 
-pub fn print(ctx: &mut Runner, args: &[Record]) -> Record {
+pub fn print(ctx: &mut Runtime, args: &[Record]) -> Record {
   match args {
     [symbol] => {
       let val = ctx.eval(symbol);
@@ -61,7 +61,7 @@ pub fn print(ctx: &mut Runner, args: &[Record]) -> Record {
   }
 }
 
-pub fn new_function(ctx: &mut Runner, args: &[Record]) -> Record {
+pub fn new_function(ctx: &mut Runtime, args: &[Record]) -> Record {
   match args {
     [Record::Expression(params_expr), Record::Expression(body)] => {
       let mut parser = Parser::new();
@@ -86,7 +86,7 @@ pub fn new_function(ctx: &mut Runner, args: &[Record]) -> Record {
   }
 }
 
-pub fn cond_if(ctx: &mut Runner, args: &[Record]) -> Record {
+pub fn cond_if(ctx: &mut Runtime, args: &[Record]) -> Record {
  match args {
     [
       cond_expr,

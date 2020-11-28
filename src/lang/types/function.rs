@@ -1,4 +1,4 @@
-use crate::lang::runner::Runner;
+use crate::lang::runtime::Runtime;
 
 use super::{expression::Expression, record::Record, symbol::Symbol};
 
@@ -16,7 +16,7 @@ impl Function {
     }
   }
 
-  pub fn apply(&self, ctx: &mut Runner, args: Vec<Record>) -> Record {
+  pub fn apply(&self, ctx: &mut Runtime, args: Vec<Record>) -> Record {
     if self.params.len() != args.len() {
       panic!("Function called with incorrect number of params!")
     }
