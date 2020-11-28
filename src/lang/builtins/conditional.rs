@@ -4,6 +4,7 @@ pub fn get_builtins() -> Vec<Builtin>{
   vec![
     Builtin::new("if", cond_if),
     Builtin::new("=", is_equal),
+    Builtin::new("<", is_less),
   ]
 }
 
@@ -45,6 +46,33 @@ fn is_equal(ctx: &mut Runtime, args: &[Record]) -> Record {
       match (&left, &right) {
         (Record::Symbol(lhs), Record::Symbol(rhs)) => {
           if lhs == rhs {
+            Record::Symbol(TRUE.into())
+          }
+          else {
+            Record::Symbol(FALSE.into())
+          }
+          }
+        _ => { panic!("Cannot compare {:?} and {:?}", left, right) }
+      }
+    }
+    _ => {
+      panic!("'print' called with incorrect number of args")
+    }
+  }
+}
+
+fn is_less(ctx: &mut Runtime, args: &[Record]) -> Record {
+  match args {
+    [
+      left_expr,
+      right_expr,
+    ] => {
+      let left = ctx.eval(left_expr);
+      let right = ctx.eval(right_expr);
+
+      match (&left, &right) {
+        (Record::Symbol(lhs), Record::Symbol(rhs)) => {
+          if lhs < rhs {
             Record::Symbol(TRUE.into())
           }
           else {
