@@ -29,7 +29,7 @@ impl Runtime {
     }
   }
 
-  pub fn run(&mut self, program: String) -> Record {
+  pub fn run(&mut self, program: String) -> String {
     let exprs = Parser::new().tokenize(&program);
 
     let mut out = Record::Empty;
@@ -44,7 +44,8 @@ impl Runtime {
         }
       }
     }
-    return out;
+
+    return format!("{:?}", out);
   }
 
   pub fn root_scope(&mut self) -> &mut Scope{
