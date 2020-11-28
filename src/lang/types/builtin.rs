@@ -1,7 +1,7 @@
 use std::fmt;
 use crate::lang::runtime::Runtime;
 
-use super::{record::Record, symbol::Symbol};
+use super::{record::Record};
 
 type Func = fn(&mut Runtime, &[Record]) -> Record;
 

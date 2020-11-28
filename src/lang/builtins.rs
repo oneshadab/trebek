@@ -61,7 +61,7 @@ pub fn print(ctx: &mut Runtime, args: &[Record]) -> Record {
   }
 }
 
-pub fn new_function(ctx: &mut Runtime, args: &[Record]) -> Record {
+pub fn new_function(_ctx: &mut Runtime, args: &[Record]) -> Record {
   match args {
     [Record::Expression(params_expr), Record::Expression(body)] => {
       let mut parser = Parser::new();
