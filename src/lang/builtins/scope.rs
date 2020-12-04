@@ -9,8 +9,10 @@ pub fn get_builtins() -> Vec<Builtin>{
 
 fn define(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   match &args[..] {
-    [Record::Symbol(symbol), val] => {
-      ctx.set_global(symbol.clone(), val.clone());
+    [Record::Symbol(symbol), expr] => {
+      let val = ctx.eval(expr);
+
+      ctx.set_global(symbol.clone(), val);
 
       Record::Empty
     }
