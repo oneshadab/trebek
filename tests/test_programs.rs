@@ -2,11 +2,12 @@
 extern crate test_generator;
 
 pub mod tests {
-  use std::{path::Path, fs::read_to_string};
+  use std::{fs::{self, read_to_string}, io, io::BufRead, path::Path, io::Write};
 
   use test_generator::test_resources;
+  use tempfile;
 
-  use trebek::lang::runtime::Runtime;
+  use trebek::lang::{io_helpers::{output_stream::OutputStream}, runtime::Runtime};
 
 
   #[test_resources("tests/res/programs/*")]
@@ -20,10 +21,17 @@ pub mod tests {
     let expected_output = read_to_string(expected_output_path).expect("Expected output not found!");
 
 
+    let output_file = tempfile::NamedTempFile::new().unwrap();
+    let writeable_output_file = output_file.reopen().unwrap();
+
     let mut runtime = Runtime::new();
-    let output = runtime.run(program);
+    runtime.writer =  io::BufWriter::new(OutputStream::File(writeable_output_file));
 
+    runtime.run(program);
 
+    runtime.writer.flush().unwrap();
+
+    let output = read_to_string(output_file).unwrap();
     assert_eq!(output, expected_output);
   }
 }
