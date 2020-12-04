@@ -1,4 +1,4 @@
-use std::io::stdin;
+use std::io::{BufRead, BufWriter, Write, stdin};
 use crate::lang::{runtime::Runtime, types::{builtin::Builtin, record::Record}};
 
 
@@ -13,7 +13,7 @@ fn scan(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   match &args[..] {
     [] => {
       let mut word = String::new();
-      stdin().read_line(&mut word).unwrap();
+      ctx.reader.read_line(&mut word).unwrap();
       Record::Symbol(word)
     }
     _ => {
@@ -26,7 +26,7 @@ fn print(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   match &args[..] {
     [symbol] => {
       let val = ctx.eval(symbol);
-      println!("{:?}", val);
+      writeln!(&mut ctx.writer, "{:?}", val).unwrap();
       Record::Empty
     }
     _ => {
