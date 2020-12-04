@@ -7,7 +7,7 @@ pub mod tests {
   use test_generator::test_resources;
   use tempfile;
 
-  use trebek::lang::{io_helpers::{output_stream::OutputStream}, runtime::Runtime};
+  use trebek::lang::{io_helpers::{input_stream::InputStream, output_stream::OutputStream}, runtime::Runtime};
 
 
   #[test_resources("tests/res/programs/*")]
@@ -20,12 +20,14 @@ pub mod tests {
     let expected_output_path = dir.join("expected_output.txt");
     let expected_output = read_to_string(expected_output_path).expect("Expected output not found!");
 
+    let input_file_path = dir.join("input.txt");
+    let input_file = fs::File::open(input_file_path).unwrap_or(tempfile::tempfile().unwrap());
 
     let output_file = tempfile::NamedTempFile::new().unwrap();
-    let writeable_output_file = output_file.reopen().unwrap();
 
     let mut runtime = Runtime::new();
-    runtime.writer =  io::BufWriter::new(OutputStream::File(writeable_output_file));
+    runtime.reader = io::BufReader::new(InputStream::File(input_file));
+    runtime.writer =  io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
 
     runtime.run(program);
 
