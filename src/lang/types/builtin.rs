@@ -1,9 +1,9 @@
 use std::fmt;
 use crate::lang::runtime::Runtime;
 
-use super::{record::Record};
+use super::{callable::Callable, record::Record};
 
-type Func = fn(&mut Runtime, &[Record]) -> Record;
+type Func = fn(&mut Runtime, Vec<Record>) -> Record;
 
 #[derive(Clone)]
 pub struct Builtin {
@@ -18,8 +18,10 @@ impl Builtin {
       func
     }
   }
+}
 
-  pub fn apply(&self, ctx: &mut Runtime, args: &[Record]) -> Record {
+impl Callable for Builtin {
+  fn call(&self, ctx: &mut Runtime, args: Vec<Record>) -> Record {
     (self.func)(ctx, args)
   }
 }

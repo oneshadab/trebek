@@ -1,6 +1,6 @@
 use crate::lang::runtime::Runtime;
 
-use super::{expression::Expression, record::Record, symbol::Symbol};
+use super::{callable::Callable, expression::Expression, record::Record, symbol::Symbol};
 
 #[derive(Debug, Clone)]
 pub struct Function {
@@ -15,8 +15,10 @@ impl Function {
       body
     }
   }
+}
 
-  pub fn apply(&self, ctx: &mut Runtime, args: Vec<Record>) -> Record {
+impl Callable for Function {
+  fn call(&self, ctx: &mut Runtime, args: Vec<Record>) -> Record {
     if self.params.len() != args.len() {
       panic!("Function called with incorrect number of params!")
     }
