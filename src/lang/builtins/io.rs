@@ -13,7 +13,10 @@ fn scan(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   match &args[..] {
     [] => {
       let mut word = String::new();
+
       ctx.reader.read_line(&mut word).unwrap();
+      word.pop(); // Remove trailing newline
+
       Record::Symbol(word)
     }
     _ => {
