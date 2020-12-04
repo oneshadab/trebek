@@ -1,6 +1,6 @@
 
 
-use super::{builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
+use super::{types::callable::Callable, builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
 pub struct Runtime  {
   scopes: Vec<Scope>,
 
@@ -82,11 +82,13 @@ impl Runtime {
 
     self.push_scope();
 
-    let output = match self.eval(func_record) {
-      Record::Builtin(builtin) => { builtin.apply(self, arg_records.into()) }
-      Record::Function(func) => { func.apply(self, arg_records.into()) }
+    let callable: Box<Callable> = match self.eval(func_record) {
+      Record::Builtin(builtin) => { Box::new(builtin) }
+      Record::Function(func) => { Box::new(func) }
       other => { panic!("{:?} is not a function", other) }
     };
+
+    let output = callable.call(self, arg_records.into());
 
     self.pop_scope();
 

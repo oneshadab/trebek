@@ -8,8 +8,8 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-fn cond_if(ctx: &mut Runtime, args: &[Record]) -> Record {
-match args {
+fn cond_if(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
     [
       cond_expr,
       true_expr,
@@ -34,8 +34,8 @@ match args {
   }
 }
 
-fn is_equal(ctx: &mut Runtime, args: &[Record]) -> Record {
-  match args {
+fn is_equal(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
     [
       left_expr,
       right_expr,
@@ -61,8 +61,8 @@ fn is_equal(ctx: &mut Runtime, args: &[Record]) -> Record {
   }
 }
 
-fn is_less(ctx: &mut Runtime, args: &[Record]) -> Record {
-  match args {
+fn is_less(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
     [
       left_expr,
       right_expr,

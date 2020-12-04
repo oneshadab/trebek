@@ -7,8 +7,8 @@ pub fn get_builtins() -> Vec<Builtin>{
 }
 
 
-pub fn print(ctx: &mut Runtime, args: &[Record]) -> Record {
-  match args {
+fn print(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
     [symbol] => {
       let val = ctx.eval(symbol);
       println!("{:?}", val);

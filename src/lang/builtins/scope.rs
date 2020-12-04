@@ -7,8 +7,8 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-pub fn define(ctx: &mut Runtime, args: &[Record]) -> Record {
-  match args {
+fn define(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
     [Record::Symbol(symbol), val] => {
       ctx.set_global(symbol.clone(), val.clone());
 

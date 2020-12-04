@@ -12,8 +12,8 @@ pub fn get_builtins() -> Vec<Builtin> {
 
 macro_rules! create_math_function {
   ($func_name: ident, $operation: tt) => {
-    fn $func_name(ctx: &mut Runtime, args: &[Record]) -> Record {
-      match args {
+    fn $func_name(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+      match &args[..] {
         [arg, other_arg] => {
           let val = ctx.eval(arg);
           let other_val = ctx.eval(other_arg);

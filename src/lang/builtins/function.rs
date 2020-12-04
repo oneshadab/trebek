@@ -9,8 +9,8 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-fn create_function(_ctx: &mut Runtime, args: &[Record]) -> Record {
-  match args {
+fn create_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+    match &args[..] {
     [
       Record::Expression(params_expr),
       Record::Expression(body_expr)
@@ -24,8 +24,8 @@ fn create_function(_ctx: &mut Runtime, args: &[Record]) -> Record {
   }
 }
 
-fn define_function(ctx: &mut Runtime, args: &[Record]) -> Record {
-  match args {
+fn define_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
     [
       Record::Symbol(symbol),
       Record::Expression(params_expr),
