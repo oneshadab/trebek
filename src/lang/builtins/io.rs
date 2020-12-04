@@ -1,5 +1,4 @@
-use text_io::read;
-
+use std::io::stdin;
 use crate::lang::{runtime::Runtime, types::{builtin::Builtin, record::Record}};
 
 
@@ -13,7 +12,8 @@ pub fn get_builtins() -> Vec<Builtin>{
 fn scan(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   match &args[..] {
     [] => {
-      let word = read!();
+      let mut word = String::new();
+      stdin().read_line(&mut word).unwrap();
       Record::Symbol(word)
     }
     _ => {
