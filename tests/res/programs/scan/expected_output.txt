@@ -1,1 +1,1 @@
-hello
+Symbol("hello")

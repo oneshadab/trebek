@@ -1,4 +1,4 @@
 (def x 2)
 (def y 3)
 (def inc (fn (x) (+ x 1)))
-(inc 10)
+(print (inc 10))
