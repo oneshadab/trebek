@@ -1,21 +1,44 @@
 
 
-use super::{types::callable::Callable, builtins, parser::Parser, scope::Scope, types::expression::Expression, types::{record::Record, symbol::Symbol}};
+use std::{fs::{self, File}, io::{self, BufReader, BufWriter, Read, Write}};
+
+use super::{
+  builtins,
+  parser::Parser,
+  scope::Scope,
+  types::callable::Callable,
+  types::expression::Expression,
+  io_helpers::input_stream::InputStream,
+  io_helpers::output_stream::OutputStream,
+  types::{record::Record, symbol::Symbol}
+};
+
 pub struct Runtime  {
   scopes: Vec<Scope>,
 
   pub root_scope_id: usize,
-  pub current_scope_id: usize
+  pub current_scope_id: usize,
+
+  pub reader: BufReader<InputStream>,
+  pub writer: BufWriter<OutputStream>
 }
 
 impl Runtime {
   pub fn new() -> Runtime {
     let scopes = vec![Scope::new(None)];
 
+    let stdin_reader = BufReader::new(InputStream::Stdin(io::stdin()));
+    let stdout_writer = BufWriter::new(OutputStream::Stdout(io::stdout()));
+
+
     let mut runtime = Runtime {
       scopes,
+
       root_scope_id: 0,
       current_scope_id: 0,
+
+      reader: stdin_reader,
+      writer: stdout_writer
     };
 
     runtime.init_builtins();
