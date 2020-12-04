@@ -59,7 +59,7 @@ impl Runtime {
     for expr in exprs {
       match expr {
         Record::Expression(expr) => {
-          println!("[DBG] Executing expression: '{}'", expr);
+          eprintln!("[DBG] Executing expression: '{}'", expr);
           out = self.eval(&Record::Expression(expr));
         }
         r => {

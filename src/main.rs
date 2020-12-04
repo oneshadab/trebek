@@ -15,5 +15,5 @@ fn main() {
     let mut runtime = Runtime::new();
     let output = runtime.run(program);
 
-    println!("{:?}", output);
+    eprintln!("{:?}", output);
 }
