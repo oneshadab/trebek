@@ -1,9 +1,10 @@
-use crate::lang::{runtime::Runtime, types::{builtin::Builtin, record::Record}};
+use crate::lang::{parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
 
 
 pub fn get_builtins() -> Vec<Builtin>{
   vec![
     Builtin::new("def", define),
+    Builtin::new("let", let_new),
   ]
 }
 
@@ -18,6 +19,38 @@ fn define(ctx: &mut Runtime, args: Vec<Record>) -> Record {
     }
     _ => {
       panic!("'def' called with incorrect number of args")
+    }
+  }
+}
+
+fn let_new(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  match &args[..] {
+    [ Record::Expression(assignment_expr), body] => {
+      let mut parser = Parser::new();
+      let keys_and_vals = parser.tokenize_expression(assignment_expr);
+
+      let keys: Vec<_> = keys_and_vals.iter().step_by(2).collect();
+      let vals: Vec<_> = keys_and_vals.iter().skip(1).step_by(2).collect();
+
+      if keys.len() != vals.len() {
+        panic!("Number of symbols and vals don't match");
+      }
+
+      for (key, val) in keys.into_iter().zip(vals.into_iter()) {
+        let lhs = match key {
+          Record::Symbol(symbol) => { symbol.clone() }
+          other => { panic!("{:?} is not a symbol", other) }
+        };
+
+        let rhs = ctx.eval(val);
+
+        ctx.set_local(lhs, rhs);
+      }
+
+      ctx.eval(body)
+    },
+    _ => {
+      panic!("'let' called with incorrent args")
     }
   }
 }

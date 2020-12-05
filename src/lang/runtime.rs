@@ -114,12 +114,12 @@ impl Runtime {
     };
 
 
-    let scope_before_call = self.current_scope_id;
+    let parent_scope = self.current_scope_id;
+    self.new_child_scope();
 
     let output = callable.call(self, arg_records.into());
 
-    // Always restore the scope in-case it was changed by callee
-    self.restore_scope(scope_before_call);
+    self.restore_scope(parent_scope);
 
     output
   }
