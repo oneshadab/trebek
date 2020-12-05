@@ -27,11 +27,18 @@ impl Callable for Function {
       panic!("Function called with incorrect number of params!")
     }
 
-    for (i, _) in self.params.iter().enumerate() {
-      let arg_val = ctx.eval(&args[i].clone());
-      ctx.set_local(self.params[i].clone(), arg_val);
+    let arg_vals: Vec<_> = args.iter()
+      .map(|arg| { ctx.eval(&arg.clone()) })
+      .collect();
+
+    ctx.restore_scope(self.lexical_scope_id);
+    ctx.new_child_scope();
+
+    for (param, arg_val) in self.params.iter().zip(arg_vals.into_iter()) {
+      ctx.set_local(param.clone(), arg_val);
     }
 
+    eprintln!("DBG: {:?}", ctx.eval(&Record::Symbol("n".into())));
     let expr = Record::Expression(self.body.clone());
     ctx.eval(&expr)
   }
