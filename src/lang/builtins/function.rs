@@ -15,7 +15,7 @@ fn create_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       Record::Expression(params_expr),
       Record::Expression(body_expr)
     ] => {
-      let func = init_function(params_expr, body_expr);
+      let func = init_function(ctx, params_expr, body_expr);
       Record::Function(func)
     }
     _ => {
@@ -31,7 +31,7 @@ fn define_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       Record::Expression(params_expr),
       Record::Expression(body_expr),
     ] => {
-      let func = init_function(params_expr, body_expr);
+      let func = init_function(ctx, params_expr, body_expr);
       ctx.set_global(symbol.clone(), Record::Function(func));
 
       Record::Empty
@@ -42,7 +42,7 @@ fn define_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn init_function(params_expr: &String, body: &String) -> Function {
+fn init_function(ctx: &mut Runtime, params_expr: &String, body: &String) -> Function {
   let mut parser = Parser::new();
   let params = parser.tokenize_expression(params_expr);
 
@@ -56,5 +56,5 @@ fn init_function(params_expr: &String, body: &String) -> Function {
     })
     .collect();
 
-  Function::new(qualified_params, body.into())
+  Function::new(ctx, qualified_params, body.into())
 }

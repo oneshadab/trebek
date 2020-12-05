@@ -4,15 +4,19 @@ use super::{callable::Callable, expression::Expression, record::Record, symbol::
 
 #[derive(Debug, Clone)]
 pub struct Function {
+  lexical_scope_id: usize,
+
   params: Vec<Symbol>,
-  body: Expression
+  body: Expression,
 }
 
 impl Function {
-  pub fn new(params: Vec<Symbol>, body: Expression) -> Function {
+  pub fn new(ctx: &Runtime, params: Vec<Symbol>, body: Expression) -> Function {
     Function {
+      lexical_scope_id: ctx.current_scope_id,
+
       params,
-      body
+      body,
     }
   }
 }
