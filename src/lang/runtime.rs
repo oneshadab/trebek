@@ -59,7 +59,6 @@ impl Runtime {
     for expr in exprs {
       match expr {
         Record::Expression(expr) => {
-          eprintln!("[DBG] Executing expression: '{}'", expr);
           out = self.eval(&Record::Expression(expr));
         }
         r => {
@@ -88,12 +87,16 @@ impl Runtime {
   }
 
   pub fn eval(&mut self, record: &Record) -> Record {
-    match record {
+    let output = match record {
       Record::Expression(expr) => { self.eval_expression(expr) }
       Record::Symbol(symbol) => { self.eval_symbol(symbol) }
       Record::Empty => {Record::Empty}
       other => { panic!("{:?} evaluation is not supported", other)}
-    }
+    };
+
+    eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", record, output);
+
+    output
   }
 
   fn eval_expression(&mut self, expr: &Expression) -> Record {

@@ -40,7 +40,7 @@ impl Parser {
       buffer.clear();
     }
 
-    eprintln!("[DBG] Records: {} -> {:?}", text, records);
+    // eprintln!("[DBG] Records: {} -> {:?}", text, records);
     return records;
   }
 
