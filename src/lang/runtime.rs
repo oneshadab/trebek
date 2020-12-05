@@ -109,8 +109,8 @@ impl Runtime {
 
     let callable: Box<Callable> = match self.eval(func_record) {
       Record::Builtin(builtin) => { Box::new(builtin) }
-      Record::Function(func) => { Box::new(func) }
-      other => { panic!("{:?} is not a function", other) }
+      Record::Closure(func) => { Box::new(func) }
+      other => { panic!("{:?} is not callable", other) }
     };
 
 

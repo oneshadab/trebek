@@ -1,4 +1,4 @@
-pub mod function;
+pub mod closure;
 pub mod builtin;
 pub mod record;
 pub mod symbol;

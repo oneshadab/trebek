@@ -1,4 +1,4 @@
-use crate::lang::{types::function::Function, parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
+use crate::lang::{types::closure::Closure, parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
 
 
 
@@ -16,7 +16,7 @@ fn create_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       Record::Expression(body_expr)
     ] => {
       let func = init_function(ctx, params_expr, body_expr);
-      Record::Function(func)
+      Record::Closure(func)
     }
     _ => {
       panic!("'print' called with incorrect number of args")
@@ -32,7 +32,7 @@ fn define_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       Record::Expression(body_expr),
     ] => {
       let func = init_function(ctx, params_expr, body_expr);
-      ctx.set_global(symbol.clone(), Record::Function(func));
+      ctx.set_global(symbol.clone(), Record::Closure(func));
 
       Record::Empty
     }
@@ -42,7 +42,7 @@ fn define_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn init_function(ctx: &mut Runtime, params_expr: &String, body: &String) -> Function {
+fn init_function(ctx: &mut Runtime, params_expr: &String, body: &String) -> Closure {
   let mut parser = Parser::new();
   let params = parser.tokenize_expression(params_expr);
 
@@ -56,5 +56,5 @@ fn init_function(ctx: &mut Runtime, params_expr: &String, body: &String) -> Func
     })
     .collect();
 
-  Function::new(ctx, qualified_params, body.into())
+  Closure::new(ctx, qualified_params, body.into())
 }

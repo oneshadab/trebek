@@ -3,16 +3,16 @@ use crate::lang::runtime::Runtime;
 use super::{callable::Callable, expression::Expression, record::Record, symbol::Symbol};
 
 #[derive(Debug, Clone)]
-pub struct Function {
+pub struct Closure {
   lexical_scope_id: usize,
 
   params: Vec<Symbol>,
   body: Expression,
 }
 
-impl Function {
-  pub fn new(ctx: &Runtime, params: Vec<Symbol>, body: Expression) -> Function {
-    Function {
+impl Closure {
+  pub fn new(ctx: &Runtime, params: Vec<Symbol>, body: Expression) -> Closure {
+    Closure {
       lexical_scope_id: ctx.current_scope_id,
 
       params,
@@ -21,7 +21,7 @@ impl Function {
   }
 }
 
-impl Callable for Function {
+impl Callable for Closure {
   fn call(&self, ctx: &mut Runtime, args: Vec<Record>) -> Record {
     if self.params.len() != args.len() {
       panic!("Function called with incorrect number of params!")
