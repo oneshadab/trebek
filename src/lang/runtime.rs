@@ -103,7 +103,6 @@ impl Runtime {
     let func_record = &records[0];
     let arg_records = &records[1..];
 
-    self.push_scope();
 
     let callable: Box<Callable> = match self.eval(func_record) {
       Record::Builtin(builtin) => { Box::new(builtin) }
@@ -111,9 +110,13 @@ impl Runtime {
       other => { panic!("{:?} is not a function", other) }
     };
 
+
+    let scope_before_call = self.current_scope_id;
+
     let output = callable.call(self, arg_records.into());
 
-    self.pop_scope();
+    // Always restore the scope in-case it was changed by callee
+    self.restore_scope(scope_before_call);
 
     output
   }
@@ -128,27 +131,38 @@ impl Runtime {
     }
   }
 
-  fn push_scope(&mut self) {
+  pub fn new_child_scope(&mut self) {
     self.scopes.push(Scope::new(Some(self.current_scope_id)));
     self.current_scope_id = self.scopes.len() - 1;
   }
 
-  fn pop_scope(&mut self) {
-    self.current_scope_id = self.current_scope().parent_scope_id.unwrap();
+  pub fn restore_scope(&mut self, scope_id: usize) {
+    self.current_scope_id = scope_id;
   }
 
+
   fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<Record> {
-    let mut scope = &self.scopes[self.current_scope_id];
-    loop {
+    for scope in self.scope_chain() {
       if let Some(record) = scope.lookup(symbol) {
         return Some(record);
       }
+    }
+    None
+  }
+
+  fn scope_chain(&self) -> Vec<&Scope> {
+    let mut chain = Vec::new();
+    let mut scope = &self.scopes[self.current_scope_id];
+
+    loop {
+      chain.push(scope);
 
       if let None = scope.parent_scope_id {
-        return None;
+        break;
       }
-
       scope = &self.scopes[scope.parent_scope_id.unwrap()];
-    }
+    };
+
+    chain
   }
 }
