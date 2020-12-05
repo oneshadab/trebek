@@ -2,7 +2,7 @@
 extern crate test_generator;
 
 pub mod tests {
-  use std::{fs::{self, read_to_string}, io, io::BufRead, path::Path, io::Write};
+  use std::{fs::{self, read_to_string}, io, path::Path, io::Write};
 
   use test_generator::test_resources;
   use tempfile;

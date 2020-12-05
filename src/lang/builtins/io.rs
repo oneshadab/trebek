@@ -1,4 +1,4 @@
-use std::io::{BufRead, BufWriter, Write, stdin};
+use std::io::{BufRead, Write};
 use crate::lang::{runtime::Runtime, types::{builtin::Builtin, record::Record}};
 
 

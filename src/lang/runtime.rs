@@ -1,6 +1,6 @@
 
 
-use std::{fs::{self, File}, io::{self, BufReader, BufWriter, Read, Write}};
+use std::{io::{self, BufReader, BufWriter}};
 
 use super::{
   builtins,
@@ -107,7 +107,7 @@ impl Runtime {
     let arg_records = &records[1..];
 
 
-    let callable: Box<Callable> = match self.eval(func_record) {
+    let callable: Box<dyn Callable> = match self.eval(func_record) {
       Record::Builtin(builtin) => { Box::new(builtin) }
       Record::Closure(func) => { Box::new(func) }
       other => { panic!("{:?} is not callable", other) }

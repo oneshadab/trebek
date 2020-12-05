@@ -1,5 +1,5 @@
-use std::{fs, io::{self, BufRead, BufReader, Read}};
-
+use std::{fs, io::{self, Read}};
+#[allow(dead_code)]
 pub enum InputStream {
   Stdin(io::Stdin),
   File(fs::File)

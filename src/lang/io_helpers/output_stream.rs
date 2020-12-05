@@ -1,7 +1,5 @@
-use std::{fs, io::{self, BufWriter, Write}};
-
-pub type Writer = BufWriter<OutputStream>;
-
+use std::{fs, io::{self, Write}};
+#[allow(dead_code)]
 pub enum OutputStream {
   Stdout(io::Stdout),
   File(fs::File)
