@@ -1,0 +1,8 @@
+(defn add (a b)
+  (a + b))
+
+(let
+  (inc (fn (x) (add x 1))
+   n 3)
+
+  (print (inc n)))
