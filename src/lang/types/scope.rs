@@ -6,12 +6,12 @@ use super::symbol::Symbol;
 
 #[derive(Debug, Clone)]
 pub struct Scope {
-  pub parent_scope_id: Option<usize>,
+  pub parent_scope_id: Option<ObjectId>,
   pub objs: HashMap<Symbol, ObjectId>
 }
 
 impl Scope {
-  pub fn new(parent_scope_id: Option<usize>) -> Scope {
+  pub fn new(parent_scope_id: Option<ObjectId>) -> Scope {
     Scope {
       parent_scope_id,
       objs: HashMap::new()
