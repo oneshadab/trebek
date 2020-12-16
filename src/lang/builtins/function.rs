@@ -1,4 +1,4 @@
-use crate::lang::{types::closure::Closure, parser::Parser, runtime::Runtime, types::{builtin::Builtin, tobject::TObject}};
+use crate::lang::{parser::Parser, runtime::Runtime, types::closure::Closure, types::{builtin::Builtin, list::List, t_object::TObject}};
 
 
 
@@ -12,8 +12,8 @@ pub fn get_builtins() -> Vec<Builtin>{
 fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
     match &args[..] {
     [
-      TObject::Expression(params_expr),
-      TObject::Expression(body_expr)
+      TObject::List(params_expr),
+      TObject::List(body_expr)
     ] => {
       let func = init_function(ctx, params_expr, body_expr);
       TObject::Closure(func)
@@ -28,8 +28,8 @@ fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [
       TObject::Symbol(symbol),
-      TObject::Expression(params_expr),
-      TObject::Expression(body_expr),
+      TObject::List(params_expr),
+      TObject::List(body_expr),
     ] => {
       let func = init_function(ctx, params_expr, body_expr);
       ctx.set_global(symbol.clone(), TObject::Closure(func));
@@ -42,19 +42,17 @@ fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   }
 }
 
-fn init_function(ctx: &mut Runtime, params_expr: &String, body: &String) -> Closure {
-  let mut parser = Parser::new();
-  let params = parser.tokenize_expression(params_expr);
+fn init_function(ctx: &mut Runtime, params: &List, body: &List) -> Closure {
 
-  let qualified_params = params
+  let unwrapped_params = params
     .into_iter()
     .map(|p| {
       match p {
-        TObject::Symbol(s) => { s },
-        other => { panic!("{:?} is not a proper param!", other) }
+        TObject::Symbol(s) => { s.clone() },
+        other => { panic!("{:?} param must be a symbol!", other) }
       }
     })
     .collect();
 
-  Closure::new(ctx, qualified_params, body.into())
+  Closure::new(ctx, unwrapped_params, body.clone())
 }

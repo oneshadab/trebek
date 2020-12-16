@@ -1,7 +1,7 @@
 use std::fmt;
 use crate::lang::runtime::Runtime;
 
-use super::{callable::Callable, tobject::TObject};
+use super::{callable::Callable, t_object::TObject};
 
 type Func = fn(&mut Runtime, Vec<TObject>) -> TObject;
 

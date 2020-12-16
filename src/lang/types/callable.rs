@@ -1,6 +1,6 @@
 use crate::lang::runtime::Runtime;
 
-use super::tobject::TObject;
+use super::t_object::TObject;
 
 pub trait Callable {
   fn call(&self, ctx: &mut Runtime, args: Vec<TObject>) -> TObject;

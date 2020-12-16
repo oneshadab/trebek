@@ -1,4 +1,4 @@
-use crate::lang::{parser::Parser, runtime::Runtime, types::{builtin::Builtin, tobject::TObject}};
+use crate::lang::{parser::Parser, runtime::Runtime, types::{builtin::Builtin, t_object::TObject}};
 
 
 pub fn get_builtins() -> Vec<Builtin>{
@@ -25,9 +25,8 @@ fn define(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
 
 fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
-    [ TObject::Expression(assignment_expr), body] => {
-      let mut parser = Parser::new();
-      let keys_and_vals = parser.tokenize_expression(assignment_expr);
+    [ TObject::List(assignment_expr), body] => {
+      let keys_and_vals = assignment_expr;
 
       let keys: Vec<_> = keys_and_vals.iter().step_by(2).collect();
       let vals: Vec<_> = keys_and_vals.iter().skip(1).step_by(2).collect();

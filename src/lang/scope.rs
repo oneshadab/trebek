@@ -1,6 +1,6 @@
 use std::{collections::HashMap};
 
-use super::types::{tobject::TObject, symbol::Symbol};
+use super::types::{t_object::TObject, symbol::Symbol};
 
 #[derive(Debug)]
 pub struct Scope {

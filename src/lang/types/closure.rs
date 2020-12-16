@@ -1,17 +1,17 @@
 use crate::lang::runtime::Runtime;
 
-use super::{callable::Callable, expression::Expression, tobject::TObject, symbol::Symbol};
+use super::{callable::Callable, list::List, t_object::TObject, symbol::Symbol};
 
 #[derive(Debug, Clone)]
 pub struct Closure {
   lexical_scope_id: usize,
 
   params: Vec<Symbol>,
-  body: Expression,
+  body: List,
 }
 
 impl Closure {
-  pub fn new(ctx: &Runtime, params: Vec<Symbol>, body: Expression) -> Closure {
+  pub fn new(ctx: &Runtime, params: Vec<Symbol>, body: List) -> Closure {
     Closure {
       lexical_scope_id: ctx.current_scope_id,
 
@@ -39,7 +39,7 @@ impl Callable for Closure {
     }
 
     eprintln!("DBG: {:?}", ctx.eval(&TObject::Symbol("n".into())));
-    let expr = TObject::Expression(self.body.clone());
+    let expr = TObject::List(self.body.clone());
     ctx.eval(&expr)
   }
 }

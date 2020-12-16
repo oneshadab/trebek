@@ -1,6 +1,6 @@
 pub mod closure;
 pub mod builtin;
-pub mod tobject;
+pub mod t_object;
 pub mod symbol;
-pub mod expression;
+pub mod list;
 pub mod callable;
