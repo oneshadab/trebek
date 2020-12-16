@@ -1,11 +1,11 @@
 use std::{collections::HashMap};
 
-use super::types::{t_object::TObject, symbol::Symbol};
+use super::{memory::object_heap::ObjectId, types::{ symbol::Symbol}};
 
 #[derive(Debug)]
 pub struct Scope {
   pub parent_scope_id: Option<usize>,
-  pub objs: HashMap<Symbol, TObject>
+  pub objs: HashMap<Symbol, ObjectId>
 }
 
 impl Scope {
@@ -16,11 +16,11 @@ impl Scope {
     }
   }
 
-  pub fn set(&mut self, key: Symbol, val: TObject) {
+  pub fn set(&mut self, key: Symbol, val: ObjectId) {
     self.objs.insert(key, val);
   }
 
-  pub fn lookup(&self, key: &Symbol) -> Option<TObject>{
+  pub fn lookup(&self, key: &Symbol) -> Option<ObjectId>{
     return self.objs.get(key).cloned();
   }
 }

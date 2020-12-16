@@ -2,18 +2,11 @@
 
 use std::{io::{self, BufReader, BufWriter}};
 
-use super::{
-  builtins,
-  scope::Scope,
-  types::callable::Callable,
-  types::list::List,
-  io_helpers::input_stream::InputStream,
-  io_helpers::output_stream::OutputStream,
-  types::{t_object::TObject, symbol::Symbol}
-};
+use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::object_heap::ObjectHeap, scope::Scope, types::callable::Callable, types::list::List, types::{t_object::TObject, symbol::Symbol}};
 
 pub struct Runtime  {
   scopes: Vec<Scope>,
+  heap: ObjectHeap,
 
   pub root_scope_id: usize,
   pub current_scope_id: usize,
@@ -24,14 +17,13 @@ pub struct Runtime  {
 
 impl Runtime {
   pub fn new() -> Runtime {
-    let scopes = vec![Scope::new(None)];
-
     let stdin_reader = BufReader::new(InputStream::Stdin(io::stdin()));
     let stdout_writer = BufWriter::new(OutputStream::Stdout(io::stdout()));
 
 
     let mut runtime = Runtime {
-      scopes,
+      scopes: vec![Scope::new(None)],
+      heap: ObjectHeap::new(),
 
       root_scope_id: 0,
       current_scope_id: 0,
@@ -60,11 +52,13 @@ impl Runtime {
   }
 
   pub fn set_global(&mut self, key: Symbol, val: TObject) {
-    self.root_scope().set(key, val);
+    let val_id = self.heap.add(val);
+    self.root_scope().set(key, val_id);
   }
 
   pub fn set_local(&mut self, key: Symbol, val: TObject) {
-    self.current_scope().set(key, val);
+    let val_id = self.heap.add(val);
+    self.current_scope().set(key, val_id);
   }
 
   pub fn eval(&mut self, obj: &TObject) -> TObject {
@@ -103,12 +97,7 @@ impl Runtime {
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> TObject {
     let default = TObject::Symbol(symbol.clone().into());
-    let obj = self.recursive_lookup(symbol).unwrap_or(default);
-
-    match obj {
-      TObject::List(expr) => { self.eval(&TObject::List(expr))}
-      other => { other }
-    }
+    self.recursive_lookup(symbol).unwrap_or(default)
   }
 
   pub fn new_child_scope(&mut self) {
@@ -123,8 +112,8 @@ impl Runtime {
 
   fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<TObject> {
     for scope in self.scope_chain() {
-      if let Some(obj) = scope.lookup(symbol) {
-        return Some(obj);
+      if let Some(obj_id) = scope.lookup(symbol) {
+        return self.heap.get(obj_id);
       }
     }
     None
