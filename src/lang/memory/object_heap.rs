@@ -6,7 +6,7 @@ use crate::lang::types::t_object::TObject;
 pub type ObjectId = usize;
 
 pub struct ObjectHeap {
-  objects: HashMap<ObjectId, Box<TObject>>,
+  pub objects: HashMap<ObjectId, Box<TObject>>,
   last_id: ObjectId
 }
 
