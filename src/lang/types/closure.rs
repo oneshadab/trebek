@@ -31,14 +31,13 @@ impl Callable for Closure {
       .map(|arg| { ctx.eval(&arg.clone()) })
       .collect();
 
-    ctx.restore_scope(self.lexical_scope_id);
+    ctx.set_scope(self.lexical_scope_id);
     ctx.new_child_scope();
 
     for (param, arg_val) in self.params.iter().zip(arg_vals.into_iter()) {
       ctx.set_local(param.clone(), arg_val);
     }
 
-    eprintln!("DBG: {:?}", ctx.eval(&TObject::Symbol("n".into())));
     let expr = TObject::List(self.body.clone());
     ctx.eval(&expr)
   }
