@@ -2,10 +2,11 @@
 
 use std::{io::{self, BufReader, BufWriter}};
 
-use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::object_heap::{ObjectHeap, ObjectId}, types::callable::Callable, types::list::List, types::{scope::Scope, symbol::Symbol, t_object::TObject}};
+use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::{gc::GarbageCollector, object_heap::{ObjectHeap, ObjectId}}, types::callable::Callable, types::list::List, types::{scope::Scope, symbol::Symbol, t_object::TObject}};
 
 pub struct Runtime  {
   heap: ObjectHeap,
+  collector: GarbageCollector,
 
   pub root_scope_id: ObjectId,
   pub current_scope_id: ObjectId,
@@ -26,6 +27,7 @@ impl Runtime {
 
     let mut runtime = Runtime {
       heap,
+      collector: GarbageCollector::new(),
 
       root_scope_id: scope_id,
       current_scope_id: scope_id,
@@ -147,5 +149,9 @@ impl Runtime {
     };
 
     chain
+  }
+
+  fn run_gc(&mut self) {
+    self.collector.collect(self.root_scope_id, &mut self.heap);
   }
 }
