@@ -2,11 +2,12 @@
 
 use std::{io::{self, BufReader, BufWriter}};
 
-use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::{gc::GarbageCollector, object_heap::{ObjectHeap, ObjectId}}, types::callable::Callable, types::list::List, types::{scope::Scope, symbol::Symbol, t_object::TObject}};
+use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::{gc::GarbageCollector, object_heap::{ObjectHeap, ObjectId}}, types::callable::Callable, types::list::List, types::{scope::Scope, t_object::TObject}};
 
 pub struct Runtime  {
   heap: ObjectHeap,
   collector: GarbageCollector,
+
 
   pub root_scope_id: ObjectId,
   pub current_scope_id: ObjectId,
@@ -47,22 +48,26 @@ impl Runtime {
     }
   }
 
-
-  pub fn set_global(&mut self, key: Symbol, obj: TObject) {
-    let obj_id = self.heap.add(obj);
-    let root_scope = self.get_mut_scope(self.root_scope_id);
-
-    root_scope.set(key, obj_id);
+  pub fn set_global(&mut self, symbol: String, obj: TObject) {
+    self.add_to_scope(self.root_scope_id, symbol, obj)
   }
 
-  pub fn set_local(&mut self, key: Symbol, obj: TObject) {
-    let obj_id = self.heap.add(obj);
-    let current_scope = self.get_mut_scope(self.current_scope_id);
+  pub fn set_local(&mut self, symbol: String, obj: TObject) {
+    self.add_to_scope(self.current_scope_id, symbol, obj)
+  }
 
-    current_scope.set(key, obj_id);
+  pub fn add_to_scope(&mut self, scope_id: ObjectId, symbol: String, obj: TObject) {
+    let key = symbol;
+    let val = self.heap.add(obj);
+
+    self.get_mut_scope(scope_id).set(key, val);
   }
 
   pub fn eval(&mut self, obj: &TObject) -> TObject {
+    self.save_current_scope();
+
+    self.new_child_scope();
+
     let output = match obj {
       TObject::List(expr) => { self.eval_expression(expr) }
       TObject::Symbol(symbol) => { self.eval_symbol(symbol) }
@@ -71,6 +76,14 @@ impl Runtime {
     };
 
     eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
+
+    self.restore_saved_scope();
+
+    let obj_id = self.heap.add(output.clone());
+    let current_scope = self.get_mut_scope(self.current_scope_id);
+    current_scope.push(obj_id);
+
+    self.run_gc();
 
     output
   }
@@ -85,20 +98,12 @@ impl Runtime {
       other => { panic!("{:?} is not callable", other) }
     };
 
-
-    let parent_scope = self.current_scope_id;
-    self.new_child_scope();
-
-    let output = callable.call(self, arg_objs.into());
-
-    self.restore_scope(parent_scope);
-
-    output
+    callable.call(self, arg_objs.into())
   }
 
-  fn eval_symbol(&mut self, symbol: &Symbol) -> TObject {
+  fn eval_symbol(&mut self, symbol: &String) -> TObject {
     let default = TObject::Symbol(symbol.clone().into());
-    self.recursive_lookup(symbol).unwrap_or(&default).clone()
+    self.lookup(symbol).unwrap_or(&default).clone()
   }
 
   pub fn new_child_scope(&mut self) {
@@ -106,12 +111,26 @@ impl Runtime {
     self.current_scope_id = self.heap.add(TObject::Scope(new_scope));
   }
 
-  pub fn restore_scope(&mut self, scope_id: usize) {
+  pub fn save_current_scope(&mut self) {
+    let current_scope_id = self.current_scope_id;
+    let root_scope = self.get_mut_scope(self.root_scope_id);
+
+    root_scope.push(current_scope_id);
+  }
+
+  pub fn restore_saved_scope(&mut self) {
+    let root_scope = self.get_mut_scope(self.root_scope_id);
+    let saved_scope_id = root_scope.pop();
+
+    self.set_scope(saved_scope_id);
+  }
+
+  pub fn set_scope(&mut self, scope_id: usize) {
     self.current_scope_id = scope_id;
   }
 
 
-  fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<&TObject> {
+  pub fn lookup(&self, symbol: &String) -> Option<&TObject> {
     for scope in self.scope_chain() {
       if let Some(obj_id) = scope.lookup(symbol) {
         return self.heap.get(obj_id);
