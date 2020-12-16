@@ -1,4 +1,4 @@
-use super::types::{expression::Expression, tobject::TObject};
+use super::types::{list::List, t_object::TObject};
 
 
 pub struct Parser {
@@ -9,8 +9,32 @@ impl Parser {
     Parser {}
   }
 
-  pub fn tokenize(&mut self, text: &String) -> Vec<TObject> {
-    let mut objs = Vec::new();
+  pub fn parse(&mut self, expr: &String) -> List {
+    let tokens = self.tokenize(&self.trim_expression(expr));
+
+    tokens
+      .iter()
+      .map(|token| {
+        let chars: Vec<char> = token.chars().collect();
+
+        match chars[..] {
+          [] => {
+            TObject::Empty
+          }
+          ['(', .., ')'] => {
+            let inner_list = self.parse(token);
+            TObject::List(inner_list)
+          },
+          _ => {
+            TObject::Symbol(token.into())
+          }
+        }
+      })
+      .collect()
+  }
+
+  pub fn tokenize(&mut self, text: &String) -> Vec<String> {
+    let mut tokens: Vec<String> = Vec::new();
 
     let mut buffer: Vec<char> = Vec::new();
     let mut depth = 0;
@@ -18,7 +42,7 @@ impl Parser {
     for ch in text.chars() {
       if depth == 0 && self.is_white_space(ch) {
         if !buffer.is_empty() {
-          objs.push( self.to_obj(&buffer) );
+          tokens.push( buffer.iter().collect() );
           buffer.clear();
         }
       }
@@ -36,16 +60,11 @@ impl Parser {
     }
 
     if !buffer.is_empty() {
-      objs.push( self.to_obj(&buffer) );
+      tokens.push( buffer.iter().collect() );
       buffer.clear();
     }
 
-    // eprintln!("[DBG] Objs: {} -> {:?}", text, objs);
-    return objs;
-  }
-
-  pub fn tokenize_expression(&mut self, expr: &Expression) -> Vec<TObject>{
-    self.tokenize(&self.trim_expression(expr))
+    return tokens;
   }
 
   fn is_white_space(&self, ch: char) -> bool {
@@ -53,7 +72,7 @@ impl Parser {
     return whitespace_chars.contains(&ch);
   }
 
-  pub fn trim_expression(&self, expr: &Expression) -> String {
+  fn trim_expression(&self, expr: &String) -> String {
     let char_buffer: Vec<_> = expr.chars().collect();
 
     let mut new_start = 0;
@@ -71,22 +90,6 @@ impl Parser {
       ['(', inside @ .., ')'] => { inside.iter().collect() }
       [] => { String::from("") }
       _ => { panic!("{} is not an expression!", expr) }
-    }
-  }
-
-  fn to_obj(&mut self, buffer: &Vec<char>) -> TObject {
-    let token: String = buffer.iter().collect();
-
-    match buffer[..] {
-      [] => {
-        TObject::Empty
-      }
-      ['(', .., ')'] => {
-        TObject::Expression(token)
-      },
-      _ => {
-        TObject::Symbol(token)
-      }
     }
   }
 }

@@ -7,10 +7,10 @@ use super::{
   parser::Parser,
   scope::Scope,
   types::callable::Callable,
-  types::expression::Expression,
+  types::list::List,
   io_helpers::input_stream::InputStream,
   io_helpers::output_stream::OutputStream,
-  types::{tobject::TObject, symbol::Symbol}
+  types::{t_object::TObject, symbol::Symbol}
 };
 
 pub struct Runtime  {
@@ -53,21 +53,17 @@ impl Runtime {
   }
 
   pub fn run(&mut self, program: String) -> String {
-    let exprs = Parser::new().tokenize(&program);
+    let mut parser = Parser::new();
+    let exprs = parser.tokenize(&program);
 
     let mut out = TObject::Empty;
+
     for expr in exprs {
-      match expr {
-        TObject::Expression(expr) => {
-          out = self.eval(&TObject::Expression(expr));
-        }
-        r => {
-          panic!("{:?} is not an expression", r)
-        }
-      }
+      let list = TObject::List(parser.parse(&expr));
+      out = self.eval(&list);
     }
 
-    return format!("{:?}", out);
+    format!("{:?}", out)
   }
 
   pub fn root_scope(&mut self) -> &mut Scope{
@@ -88,7 +84,7 @@ impl Runtime {
 
   pub fn eval(&mut self, obj: &TObject) -> TObject {
     let output = match obj {
-      TObject::Expression(expr) => { self.eval_expression(expr) }
+      TObject::List(expr) => { self.eval_expression(expr) }
       TObject::Symbol(symbol) => { self.eval_symbol(symbol) }
       TObject::Empty => {TObject::Empty}
       other => { panic!("{:?} evaluation is not supported", other)}
@@ -99,13 +95,9 @@ impl Runtime {
     output
   }
 
-  fn eval_expression(&mut self, expr: &Expression) -> TObject {
-    let mut parser = Parser::new();
-    let objs = parser.tokenize_expression(expr);
-
-    let func_obj = &objs[0];
-    let arg_objs = &objs[1..];
-
+  fn eval_expression(&mut self, list: &List) -> TObject {
+    let func_obj = &list[0];
+    let arg_objs = &list[1..];
 
     let callable: Box<dyn Callable> = match self.eval(func_obj) {
       TObject::Builtin(builtin) => { Box::new(builtin) }
@@ -129,7 +121,7 @@ impl Runtime {
     let obj = self.recursive_lookup(symbol).unwrap_or(default);
 
     match obj {
-      TObject::Expression(expr) => { self.eval(&TObject::Expression(expr))}
+      TObject::List(expr) => { self.eval(&TObject::List(expr))}
       other => { other }
     }
   }
