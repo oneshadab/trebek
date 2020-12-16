@@ -4,7 +4,7 @@ use super::{callable::Callable, list::List, t_object::TObject, symbol::Symbol};
 
 #[derive(Debug, Clone)]
 pub struct Closure {
-  lexical_scope_id: usize,
+  pub lexical_scope_id: usize,
 
   params: Vec<Symbol>,
   body: List,
