@@ -1,4 +1,4 @@
-use super::{builtin::Builtin, list::List, closure::Closure, symbol::Symbol};
+use super::{builtin::Builtin, closure::Closure, list::List, scope::Scope, symbol::Symbol};
 
 
 #[derive(Debug, Clone)]
@@ -7,5 +7,6 @@ pub enum TObject {
   Builtin(Builtin),
   Symbol(Symbol),
   List(List),
+  Scope(Scope),
   Empty
 }

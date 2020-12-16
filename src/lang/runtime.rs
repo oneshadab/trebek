@@ -2,7 +2,7 @@
 
 use std::{io::{self, BufReader, BufWriter}};
 
-use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::object_heap::ObjectHeap, scope::Scope, types::callable::Callable, types::list::List, types::{t_object::TObject, symbol::Symbol}};
+use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::object_heap::ObjectHeap, types::callable::Callable, types::list::List, types::{scope::Scope, symbol::Symbol, t_object::TObject}};
 
 pub struct Runtime  {
   scopes: Vec<Scope>,

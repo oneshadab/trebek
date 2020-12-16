@@ -1,8 +1,10 @@
 use std::{collections::HashMap};
 
-use super::{memory::object_heap::ObjectId, types::{ symbol::Symbol}};
+use crate::lang::memory::object_heap::ObjectId;
 
-#[derive(Debug)]
+use super::symbol::Symbol;
+
+#[derive(Debug, Clone)]
 pub struct Scope {
   pub parent_scope_id: Option<usize>,
   pub objs: HashMap<Symbol, ObjectId>
