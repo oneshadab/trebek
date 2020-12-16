@@ -152,6 +152,6 @@ impl Runtime {
   }
 
   fn run_gc(&mut self) {
-    self.collector.collect(self.root_scope_id, &mut self.heap);
+    self.collector.collect(self.current_scope_id, &mut self.heap);
   }
 }

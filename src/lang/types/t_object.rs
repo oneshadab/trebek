@@ -17,10 +17,16 @@ impl TObject {
   pub fn trace(&self) -> Vec<ObjectId> {
     match self {
         TObject::Scope(scope ) => {
-          scope.objs
+          let mut reachable: Vec<ObjectId> = scope.objs
             .values()
-            .map(|v| *v)
-            .collect()
+            .map(|v| v.clone())
+            .collect();
+
+          if let Some(scope_id) = scope.parent_scope_id {
+            reachable.push(scope_id);
+          }
+
+          reachable
         }
         TObject::Closure(func) => {
           vec![func.lexical_scope_id]
