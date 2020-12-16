@@ -1,4 +1,4 @@
-use super::types::{expression::Expression, record::Record};
+use super::types::{expression::Expression, tobject::TObject};
 
 
 pub struct Parser {
@@ -9,8 +9,8 @@ impl Parser {
     Parser {}
   }
 
-  pub fn tokenize(&mut self, text: &String) -> Vec<Record> {
-    let mut records = Vec::new();
+  pub fn tokenize(&mut self, text: &String) -> Vec<TObject> {
+    let mut objs = Vec::new();
 
     let mut buffer: Vec<char> = Vec::new();
     let mut depth = 0;
@@ -18,7 +18,7 @@ impl Parser {
     for ch in text.chars() {
       if depth == 0 && self.is_white_space(ch) {
         if !buffer.is_empty() {
-          records.push( self.to_record(&buffer) );
+          objs.push( self.to_obj(&buffer) );
           buffer.clear();
         }
       }
@@ -36,15 +36,15 @@ impl Parser {
     }
 
     if !buffer.is_empty() {
-      records.push( self.to_record(&buffer) );
+      objs.push( self.to_obj(&buffer) );
       buffer.clear();
     }
 
-    // eprintln!("[DBG] Records: {} -> {:?}", text, records);
-    return records;
+    // eprintln!("[DBG] Objs: {} -> {:?}", text, objs);
+    return objs;
   }
 
-  pub fn tokenize_expression(&mut self, expr: &Expression) -> Vec<Record>{
+  pub fn tokenize_expression(&mut self, expr: &Expression) -> Vec<TObject>{
     self.tokenize(&self.trim_expression(expr))
   }
 
@@ -74,18 +74,18 @@ impl Parser {
     }
   }
 
-  fn to_record(&mut self, buffer: &Vec<char>) -> Record {
+  fn to_obj(&mut self, buffer: &Vec<char>) -> TObject {
     let token: String = buffer.iter().collect();
 
     match buffer[..] {
       [] => {
-        Record::Empty
+        TObject::Empty
       }
       ['(', .., ')'] => {
-        Record::Expression(token)
+        TObject::Expression(token)
       },
       _ => {
-        Record::Symbol(token)
+        TObject::Symbol(token)
       }
     }
   }

@@ -10,7 +10,7 @@ use super::{
   types::expression::Expression,
   io_helpers::input_stream::InputStream,
   io_helpers::output_stream::OutputStream,
-  types::{record::Record, symbol::Symbol}
+  types::{tobject::TObject, symbol::Symbol}
 };
 
 pub struct Runtime  {
@@ -48,18 +48,18 @@ impl Runtime {
 
   fn init_builtins(&mut self) {
     for builtin in builtins::get_builtins() {
-      self.set_global(builtin.name.into(), Record::Builtin(builtin));
+      self.set_global(builtin.name.into(), TObject::Builtin(builtin));
     }
   }
 
   pub fn run(&mut self, program: String) -> String {
     let exprs = Parser::new().tokenize(&program);
 
-    let mut out = Record::Empty;
+    let mut out = TObject::Empty;
     for expr in exprs {
       match expr {
-        Record::Expression(expr) => {
-          out = self.eval(&Record::Expression(expr));
+        TObject::Expression(expr) => {
+          out = self.eval(&TObject::Expression(expr));
         }
         r => {
           panic!("{:?} is not an expression", r)
@@ -78,38 +78,38 @@ impl Runtime {
     &mut self.scopes[self.current_scope_id]
   }
 
-  pub fn set_global(&mut self, key: Symbol, val: Record) {
+  pub fn set_global(&mut self, key: Symbol, val: TObject) {
     self.root_scope().set(key, val);
   }
 
-  pub fn set_local(&mut self, key: Symbol, val: Record) {
+  pub fn set_local(&mut self, key: Symbol, val: TObject) {
     self.current_scope().set(key, val);
   }
 
-  pub fn eval(&mut self, record: &Record) -> Record {
-    let output = match record {
-      Record::Expression(expr) => { self.eval_expression(expr) }
-      Record::Symbol(symbol) => { self.eval_symbol(symbol) }
-      Record::Empty => {Record::Empty}
+  pub fn eval(&mut self, obj: &TObject) -> TObject {
+    let output = match obj {
+      TObject::Expression(expr) => { self.eval_expression(expr) }
+      TObject::Symbol(symbol) => { self.eval_symbol(symbol) }
+      TObject::Empty => {TObject::Empty}
       other => { panic!("{:?} evaluation is not supported", other)}
     };
 
-    eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", record, output);
+    eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
 
     output
   }
 
-  fn eval_expression(&mut self, expr: &Expression) -> Record {
+  fn eval_expression(&mut self, expr: &Expression) -> TObject {
     let mut parser = Parser::new();
-    let records = parser.tokenize_expression(expr);
+    let objs = parser.tokenize_expression(expr);
 
-    let func_record = &records[0];
-    let arg_records = &records[1..];
+    let func_obj = &objs[0];
+    let arg_objs = &objs[1..];
 
 
-    let callable: Box<dyn Callable> = match self.eval(func_record) {
-      Record::Builtin(builtin) => { Box::new(builtin) }
-      Record::Closure(func) => { Box::new(func) }
+    let callable: Box<dyn Callable> = match self.eval(func_obj) {
+      TObject::Builtin(builtin) => { Box::new(builtin) }
+      TObject::Closure(func) => { Box::new(func) }
       other => { panic!("{:?} is not callable", other) }
     };
 
@@ -117,19 +117,19 @@ impl Runtime {
     let parent_scope = self.current_scope_id;
     self.new_child_scope();
 
-    let output = callable.call(self, arg_records.into());
+    let output = callable.call(self, arg_objs.into());
 
     self.restore_scope(parent_scope);
 
     output
   }
 
-  fn eval_symbol(&mut self, symbol: &Symbol) -> Record {
-    let default = Record::Symbol(symbol.clone().into());
-    let record = self.recursive_lookup(symbol).unwrap_or(default);
+  fn eval_symbol(&mut self, symbol: &Symbol) -> TObject {
+    let default = TObject::Symbol(symbol.clone().into());
+    let obj = self.recursive_lookup(symbol).unwrap_or(default);
 
-    match record {
-      Record::Expression(expr) => { self.eval(&Record::Expression(expr))}
+    match obj {
+      TObject::Expression(expr) => { self.eval(&TObject::Expression(expr))}
       other => { other }
     }
   }
@@ -144,10 +144,10 @@ impl Runtime {
   }
 
 
-  fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<Record> {
+  fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<TObject> {
     for scope in self.scope_chain() {
-      if let Some(record) = scope.lookup(symbol) {
-        return Some(record);
+      if let Some(obj) = scope.lookup(symbol) {
+        return Some(obj);
       }
     }
     None

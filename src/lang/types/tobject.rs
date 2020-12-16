@@ -2,7 +2,7 @@ use super::{builtin::Builtin, expression::Expression, closure::Closure, symbol::
 
 
 #[derive(Debug, Clone)]
-pub enum Record {
+pub enum TObject {
   Closure(Closure),
   Builtin(Builtin),
   Symbol(Symbol),

@@ -1,4 +1,4 @@
-use crate::lang::{types::builtin::Builtin, constants::{FALSE, TRUE}, runtime::Runtime, types::record::Record};
+use crate::lang::{types::builtin::Builtin, constants::{FALSE, TRUE}, runtime::Runtime, types::tobject::TObject};
 
 pub fn get_builtins() -> Vec<Builtin>{
   vec![
@@ -8,7 +8,7 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-fn cond_if(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [
       cond_expr,
@@ -18,7 +18,7 @@ fn cond_if(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       let result = ctx.eval(cond_expr);
 
       match result {
-        Record::Symbol(symbol) => {
+        TObject::Symbol(symbol) => {
           match symbol {
             s if s == TRUE => { ctx.eval(true_expr) }
             s if s == FALSE => { ctx.eval(false_expr) }
@@ -34,7 +34,7 @@ fn cond_if(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn is_equal(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [
       left_expr,
@@ -44,12 +44,12 @@ fn is_equal(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       let right = ctx.eval(right_expr);
 
       match (&left, &right) {
-        (Record::Symbol(lhs), Record::Symbol(rhs)) => {
+        (TObject::Symbol(lhs), TObject::Symbol(rhs)) => {
           if lhs == rhs {
-            Record::Symbol(TRUE.into())
+            TObject::Symbol(TRUE.into())
           }
           else {
-            Record::Symbol(FALSE.into())
+            TObject::Symbol(FALSE.into())
           }
           }
         _ => { panic!("Cannot compare {:?} and {:?}", left, right) }
@@ -61,7 +61,7 @@ fn is_equal(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn is_less(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [
       left_expr,
@@ -71,12 +71,12 @@ fn is_less(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       let right = ctx.eval(right_expr);
 
       match (&left, &right) {
-        (Record::Symbol(lhs), Record::Symbol(rhs)) => {
+        (TObject::Symbol(lhs), TObject::Symbol(rhs)) => {
           if lhs < rhs {
-            Record::Symbol(TRUE.into())
+            TObject::Symbol(TRUE.into())
           }
           else {
-            Record::Symbol(FALSE.into())
+            TObject::Symbol(FALSE.into())
           }
           }
         _ => { panic!("Cannot compare {:?} and {:?}", left, right) }

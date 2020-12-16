@@ -1,5 +1,5 @@
 use std::io::{BufRead, Write};
-use crate::lang::{runtime::Runtime, types::{builtin::Builtin, record::Record}};
+use crate::lang::{runtime::Runtime, types::{builtin::Builtin, tobject::TObject}};
 
 
 pub fn get_builtins() -> Vec<Builtin>{
@@ -9,7 +9,7 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-fn scan(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn scan(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [] => {
       let mut word = String::new();
@@ -17,7 +17,7 @@ fn scan(ctx: &mut Runtime, args: Vec<Record>) -> Record {
       ctx.reader.read_line(&mut word).unwrap();
       word.pop(); // Remove trailing newline
 
-      Record::Symbol(word)
+      TObject::Symbol(word)
     }
     _ => {
       panic!("'scan' called with incorrect number of args")
@@ -25,12 +25,12 @@ fn scan(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn print(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn print(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [symbol] => {
       let val = ctx.eval(symbol);
       writeln!(&mut ctx.writer, "{:?}", val).unwrap();
-      Record::Empty
+      TObject::Empty
     }
     _ => {
       panic!("'print' called with incorrect number of args")

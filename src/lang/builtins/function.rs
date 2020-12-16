@@ -1,4 +1,4 @@
-use crate::lang::{types::closure::Closure, parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
+use crate::lang::{types::closure::Closure, parser::Parser, runtime::Runtime, types::{builtin::Builtin, tobject::TObject}};
 
 
 
@@ -9,14 +9,14 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-fn create_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
     match &args[..] {
     [
-      Record::Expression(params_expr),
-      Record::Expression(body_expr)
+      TObject::Expression(params_expr),
+      TObject::Expression(body_expr)
     ] => {
       let func = init_function(ctx, params_expr, body_expr);
-      Record::Closure(func)
+      TObject::Closure(func)
     }
     _ => {
       panic!("'print' called with incorrect number of args")
@@ -24,17 +24,17 @@ fn create_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn define_function(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
     [
-      Record::Symbol(symbol),
-      Record::Expression(params_expr),
-      Record::Expression(body_expr),
+      TObject::Symbol(symbol),
+      TObject::Expression(params_expr),
+      TObject::Expression(body_expr),
     ] => {
       let func = init_function(ctx, params_expr, body_expr);
-      ctx.set_global(symbol.clone(), Record::Closure(func));
+      ctx.set_global(symbol.clone(), TObject::Closure(func));
 
-      Record::Empty
+      TObject::Empty
     }
     _ => {
       panic!("'defn' called with incorrect number of args")
@@ -50,7 +50,7 @@ fn init_function(ctx: &mut Runtime, params_expr: &String, body: &String) -> Clos
     .into_iter()
     .map(|p| {
       match p {
-        Record::Symbol(s) => { s },
+        TObject::Symbol(s) => { s },
         other => { panic!("{:?} is not a proper param!", other) }
       }
     })

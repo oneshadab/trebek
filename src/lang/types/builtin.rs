@@ -1,9 +1,9 @@
 use std::fmt;
 use crate::lang::runtime::Runtime;
 
-use super::{callable::Callable, record::Record};
+use super::{callable::Callable, tobject::TObject};
 
-type Func = fn(&mut Runtime, Vec<Record>) -> Record;
+type Func = fn(&mut Runtime, Vec<TObject>) -> TObject;
 
 #[derive(Clone)]
 pub struct Builtin {
@@ -21,7 +21,7 @@ impl Builtin {
 }
 
 impl Callable for Builtin {
-  fn call(&self, ctx: &mut Runtime, args: Vec<Record>) -> Record {
+  fn call(&self, ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
     (self.func)(ctx, args)
   }
 }

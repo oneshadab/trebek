@@ -1,4 +1,4 @@
-use crate::lang::{parser::Parser, runtime::Runtime, types::{builtin::Builtin, record::Record}};
+use crate::lang::{parser::Parser, runtime::Runtime, types::{builtin::Builtin, tobject::TObject}};
 
 
 pub fn get_builtins() -> Vec<Builtin>{
@@ -8,14 +8,14 @@ pub fn get_builtins() -> Vec<Builtin>{
   ]
 }
 
-fn define(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn define(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
-    [Record::Symbol(symbol), expr] => {
+    [TObject::Symbol(symbol), expr] => {
       let val = ctx.eval(expr);
 
       ctx.set_global(symbol.clone(), val);
 
-      Record::Empty
+      TObject::Empty
     }
     _ => {
       panic!("'def' called with incorrect number of args")
@@ -23,9 +23,9 @@ fn define(ctx: &mut Runtime, args: Vec<Record>) -> Record {
   }
 }
 
-fn let_new(ctx: &mut Runtime, args: Vec<Record>) -> Record {
+fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
   match &args[..] {
-    [ Record::Expression(assignment_expr), body] => {
+    [ TObject::Expression(assignment_expr), body] => {
       let mut parser = Parser::new();
       let keys_and_vals = parser.tokenize_expression(assignment_expr);
 
@@ -38,7 +38,7 @@ fn let_new(ctx: &mut Runtime, args: Vec<Record>) -> Record {
 
       for (key, val) in keys.into_iter().zip(vals.into_iter()) {
         let lhs = match key {
-          Record::Symbol(symbol) => { symbol.clone() }
+          TObject::Symbol(symbol) => { symbol.clone() }
           other => { panic!("{:?} is not a symbol", other) }
         };
 
