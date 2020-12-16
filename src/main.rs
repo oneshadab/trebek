@@ -1,6 +1,7 @@
-mod lang;
 
-use lang::{runtime::Runtime};
+mod lang;
+use lang::runner::{Runner};
+
 
 
 fn main() {
@@ -12,8 +13,8 @@ fn main() {
         (if false (print true) (print false))
     ");
 
-    let mut runtime = Runtime::new();
-    let output = runtime.run(program);
+    let mut runner = Runner::new();
+    let output = runner.run(program);
 
     eprintln!("{:?}", output);
 }

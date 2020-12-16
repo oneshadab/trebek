@@ -7,7 +7,7 @@ pub mod tests {
   use test_generator::test_resources;
   use tempfile;
 
-  use trebek::lang::{io_helpers::{input_stream::InputStream, output_stream::OutputStream}, runtime::Runtime};
+  use trebek::lang::{io_helpers::{input_stream::InputStream, output_stream::OutputStream}, runner::Runner, runtime::Runtime};
 
 
   #[test_resources("tests/res/programs/*")]
@@ -25,13 +25,13 @@ pub mod tests {
 
     let output_file = tempfile::NamedTempFile::new().unwrap();
 
-    let mut runtime = Runtime::new();
-    runtime.reader = io::BufReader::new(InputStream::File(input_file));
-    runtime.writer =  io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
+    let mut runner = Runner::new();
+    runner.runtime.reader = io::BufReader::new(InputStream::File(input_file));
+    runner.runtime.writer =  io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
 
-    runtime.run(program);
+    runner.run(program);
 
-    runtime.writer.flush().unwrap();
+    runner.runtime.writer.flush().unwrap();
 
     let output = read_to_string(output_file).unwrap();
     assert_eq!(output, expected_output);

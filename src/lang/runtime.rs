@@ -52,20 +52,6 @@ impl Runtime {
     }
   }
 
-  pub fn run(&mut self, program: String) -> String {
-    let mut parser = Parser::new();
-    let exprs = parser.tokenize(&program);
-
-    let mut out = TObject::Empty;
-
-    for expr in exprs {
-      let list = TObject::List(parser.parse(&expr));
-      out = self.eval(&list);
-    }
-
-    format!("{:?}", out)
-  }
-
   pub fn root_scope(&mut self) -> &mut Scope{
     &mut self.scopes[self.root_scope_id]
   }
