@@ -17,10 +17,15 @@ impl TObject {
   pub fn trace(&self) -> Vec<ObjectId> {
     match self {
         TObject::Scope(scope ) => {
-          let mut reachable: Vec<ObjectId> = scope.objs
-            .values()
-            .map(|v| v.clone())
-            .collect();
+          let mut reachable = Vec::new();
+
+          for v in scope.obj_map.values() {
+            reachable.push(v.clone())
+          }
+
+          for v in scope.obj_stack.iter() {
+            reachable.push(v.clone());
+          }
 
           if let Some(scope_id) = scope.parent_scope_id {
             reachable.push(scope_id);
