@@ -1,4 +1,4 @@
-use crate::lang::{parser::Parser, runtime::Runtime, types::{builtin::Builtin, t_object::TObject}};
+use crate::lang::{runtime::Runtime, types::{builtin::Builtin, t_object::TObject}};
 
 
 pub fn get_builtins() -> Vec<Builtin>{

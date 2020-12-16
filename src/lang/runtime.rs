@@ -4,7 +4,6 @@ use std::{io::{self, BufReader, BufWriter}};
 
 use super::{
   builtins,
-  parser::Parser,
   scope::Scope,
   types::callable::Callable,
   types::list::List,

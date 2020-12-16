@@ -7,7 +7,7 @@ pub mod tests {
   use test_generator::test_resources;
   use tempfile;
 
-  use trebek::lang::{io_helpers::{input_stream::InputStream, output_stream::OutputStream}, runner::Runner, runtime::Runtime};
+  use trebek::lang::{io_helpers::{input_stream::InputStream, output_stream::OutputStream}, runner::Runner};
 
 
   #[test_resources("tests/res/programs/*")]
