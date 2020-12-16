@@ -2,14 +2,13 @@
 
 use std::{io::{self, BufReader, BufWriter}};
 
-use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::object_heap::ObjectHeap, types::callable::Callable, types::list::List, types::{scope::Scope, symbol::Symbol, t_object::TObject}};
+use super::{builtins, io_helpers::input_stream::InputStream, io_helpers::output_stream::OutputStream, memory::object_heap::{ObjectHeap, ObjectId}, types::callable::Callable, types::list::List, types::{scope::Scope, symbol::Symbol, t_object::TObject}};
 
 pub struct Runtime  {
-  scopes: Vec<Scope>,
   heap: ObjectHeap,
 
-  pub root_scope_id: usize,
-  pub current_scope_id: usize,
+  pub root_scope_id: ObjectId,
+  pub current_scope_id: ObjectId,
 
   pub reader: BufReader<InputStream>,
   pub writer: BufWriter<OutputStream>
@@ -17,16 +16,19 @@ pub struct Runtime  {
 
 impl Runtime {
   pub fn new() -> Runtime {
+    let mut heap = ObjectHeap::new();
+
+    let scope = Scope::new(None);
+    let scope_id = heap.add(TObject::Scope(scope));
+
     let stdin_reader = BufReader::new(InputStream::Stdin(io::stdin()));
     let stdout_writer = BufWriter::new(OutputStream::Stdout(io::stdout()));
 
-
     let mut runtime = Runtime {
-      scopes: vec![Scope::new(None)],
-      heap: ObjectHeap::new(),
+      heap,
 
-      root_scope_id: 0,
-      current_scope_id: 0,
+      root_scope_id: scope_id,
+      current_scope_id: scope_id,
 
       reader: stdin_reader,
       writer: stdout_writer
@@ -43,22 +45,19 @@ impl Runtime {
     }
   }
 
-  pub fn root_scope(&mut self) -> &mut Scope{
-    &mut self.scopes[self.root_scope_id]
+
+  pub fn set_global(&mut self, key: Symbol, obj: TObject) {
+    let obj_id = self.heap.add(obj);
+    let root_scope = self.get_mut_scope(self.root_scope_id);
+
+    root_scope.set(key, obj_id);
   }
 
-  pub fn current_scope(&mut self) -> &mut Scope{
-    &mut self.scopes[self.current_scope_id]
-  }
+  pub fn set_local(&mut self, key: Symbol, obj: TObject) {
+    let obj_id = self.heap.add(obj);
+    let current_scope = self.get_mut_scope(self.current_scope_id);
 
-  pub fn set_global(&mut self, key: Symbol, val: TObject) {
-    let val_id = self.heap.add(val);
-    self.root_scope().set(key, val_id);
-  }
-
-  pub fn set_local(&mut self, key: Symbol, val: TObject) {
-    let val_id = self.heap.add(val);
-    self.current_scope().set(key, val_id);
+    current_scope.set(key, obj_id);
   }
 
   pub fn eval(&mut self, obj: &TObject) -> TObject {
@@ -97,12 +96,12 @@ impl Runtime {
 
   fn eval_symbol(&mut self, symbol: &Symbol) -> TObject {
     let default = TObject::Symbol(symbol.clone().into());
-    self.recursive_lookup(symbol).unwrap_or(default)
+    self.recursive_lookup(symbol).unwrap_or(&default).clone()
   }
 
   pub fn new_child_scope(&mut self) {
-    self.scopes.push(Scope::new(Some(self.current_scope_id)));
-    self.current_scope_id = self.scopes.len() - 1;
+    let new_scope = Scope::new(Some(self.current_scope_id));
+    self.current_scope_id = self.heap.add(TObject::Scope(new_scope));
   }
 
   pub fn restore_scope(&mut self, scope_id: usize) {
@@ -110,7 +109,7 @@ impl Runtime {
   }
 
 
-  fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<TObject> {
+  fn recursive_lookup(&mut self, symbol: &Symbol) -> Option<&TObject> {
     for scope in self.scope_chain() {
       if let Some(obj_id) = scope.lookup(symbol) {
         return self.heap.get(obj_id);
@@ -119,17 +118,32 @@ impl Runtime {
     None
   }
 
-  fn scope_chain(&self) -> Vec<&Scope> {
+  fn get_scope(&self, scope_id: ObjectId) -> &Scope {
+    match self.heap.get(scope_id) {
+      Some(TObject::Scope(scope)) => { scope }
+      _ => { panic!("Scope not found for id {}", scope_id) }
+    }
+  }
+
+  fn get_mut_scope(&mut self, scope_id: ObjectId) -> &mut Scope {
+    match self.heap.get_mut(scope_id) {
+      Some(TObject::Scope(scope)) => { scope }
+      _ => { panic!("Scope not found for id {}", scope_id) }
+    }
+  }
+
+  fn scope_chain(&self) -> Vec<Scope> {
     let mut chain = Vec::new();
-    let mut scope = &self.scopes[self.current_scope_id];
+    let mut scope = self.get_scope(self.current_scope_id);
 
     loop {
-      chain.push(scope);
+      chain.push(scope.clone());
 
       if let None = scope.parent_scope_id {
         break;
       }
-      scope = &self.scopes[scope.parent_scope_id.unwrap()];
+
+      scope = self.get_scope(scope.parent_scope_id.unwrap());
     };
 
     chain

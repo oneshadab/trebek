@@ -24,9 +24,16 @@ impl ObjectHeap {
     obj_id
   }
 
-  pub fn get(&self, obj_id: ObjectId) -> Option<TObject>  {
+  pub fn get(&self, obj_id: ObjectId) -> Option<&TObject>  {
     match self.heap.get(&obj_id) {
-      Some(boxed_obj) => { Some(*boxed_obj.clone()) }
+      Some(boxed_obj) => { Some(boxed_obj) }
+      None => { None }
+    }
+  }
+
+  pub fn get_mut(&mut self, obj_id: ObjectId) -> Option<&mut TObject>  {
+    match self.heap.get_mut(&obj_id) {
+      Some(boxed_obj) => { Some(boxed_obj) }
       None => { None }
     }
   }
