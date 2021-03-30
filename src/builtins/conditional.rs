@@ -1,9 +1,4 @@
-use crate::{
-    constants::{FALSE, TRUE},
-    runtime::Runtime,
-    types::builtin::Builtin,
-    types::t_object::TObject,
-};
+use crate::{constants::{FALSE, TRUE}, runtime::{Runtime, RuntimeResult}, types::builtin::Builtin, types::t_object::TObject};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![
@@ -13,12 +8,12 @@ pub fn get_builtins() -> Vec<Builtin> {
     ]
 }
 
-fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [cond_expr, true_expr, false_expr] => {
-            let result = ctx.eval(cond_expr);
+            let cond_res = ctx.eval(cond_expr)?;
 
-            match result {
+            let res = match cond_res {
                 TObject::Symbol(symbol) => match symbol {
                     s if s == TRUE => ctx.eval(true_expr),
                     s if s == FALSE => ctx.eval(false_expr),
@@ -27,7 +22,9 @@ fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
                 other => {
                     panic!("{:?} is not a boolean!", other)
                 }
-            }
+            };
+
+            res
         }
         _ => {
             panic!("'print' called with incorrect number of args")
@@ -35,13 +32,13 @@ fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
     }
 }
 
-fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [left_expr, right_expr] => {
-            let left = ctx.eval(left_expr);
-            let right = ctx.eval(right_expr);
+            let left = ctx.eval(left_expr)?;
+            let right = ctx.eval(right_expr)?;
 
-            match (&left, &right) {
+            let res = match (&left, &right) {
                 (TObject::Symbol(lhs), TObject::Symbol(rhs)) => {
                     if lhs == rhs {
                         TObject::Symbol(TRUE.into())
@@ -52,7 +49,9 @@ fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
                 _ => {
                     panic!("Cannot compare {:?} and {:?}", left, right)
                 }
-            }
+            };
+
+            Ok(res)
         }
         _ => {
             panic!("'print' called with incorrect number of args")
@@ -60,13 +59,13 @@ fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
     }
 }
 
-fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [left_expr, right_expr] => {
-            let left = ctx.eval(left_expr);
-            let right = ctx.eval(right_expr);
+            let left = ctx.eval(left_expr)?;
+            let right = ctx.eval(right_expr)?;
 
-            match (&left, &right) {
+            let res = match (&left, &right) {
                 (TObject::Symbol(lhs), TObject::Symbol(rhs)) => {
                     if lhs < rhs {
                         TObject::Symbol(TRUE.into())
@@ -77,7 +76,9 @@ fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
                 _ => {
                     panic!("Cannot compare {:?} and {:?}", left, right)
                 }
-            }
+            };
+
+            Ok(res)
         }
         _ => {
             panic!("'print' called with incorrect number of args")

@@ -1,4 +1,4 @@
-use crate::runtime::Runtime;
+use crate::runtime::{Runtime, RuntimeResult};
 
 use super::{callable::Callable, list::List, symbol::Symbol, t_object::TObject};
 
@@ -22,7 +22,7 @@ impl Closure {
 }
 
 impl Callable for Closure {
-    fn call(&self, ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+    fn call(&self, ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         if self.params.len() != args.len() {
             panic!("Function called with incorrect number of params!")
         }
@@ -33,7 +33,7 @@ impl Callable for Closure {
         ctx.new_child_scope();
 
         for (param, arg_val) in self.params.iter().zip(arg_vals.into_iter()) {
-            ctx.set_local(param.clone(), arg_val);
+            ctx.set_local(param.clone(), arg_val?);
         }
 
         let expr = TObject::List(self.body.clone());

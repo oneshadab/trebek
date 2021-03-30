@@ -1,8 +1,4 @@
-use crate::{
-    runtime::Runtime,
-    types::closure::Closure,
-    types::{builtin::Builtin, list::List, t_object::TObject},
-};
+use crate::{runtime::{Runtime, RuntimeResult}, types::closure::Closure, types::{builtin::Builtin, list::List, t_object::TObject}};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![
@@ -11,11 +7,11 @@ pub fn get_builtins() -> Vec<Builtin> {
     ]
 }
 
-fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [TObject::List(params_expr), TObject::List(body_expr)] => {
             let func = init_function(ctx, params_expr, body_expr);
-            TObject::Closure(func)
+            Ok(TObject::Closure(func))
         }
         _ => {
             panic!("'print' called with incorrect number of args")
@@ -23,13 +19,13 @@ fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
     }
 }
 
-fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [TObject::Symbol(symbol), TObject::List(params_expr), TObject::List(body_expr)] => {
             let func = init_function(ctx, params_expr, body_expr);
             ctx.set_global(symbol.clone(), TObject::Closure(func));
 
-            TObject::Empty
+            Ok(TObject::Empty)
         }
         _ => {
             panic!("'defn' called with incorrect number of args")

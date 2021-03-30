@@ -55,7 +55,7 @@ impl GarbageCollector {
 
         for id in unreachbale_ids.clone() {
             let obj = heap.get(id).unwrap();
-            eprintln!("[GC DBG]: {:?} {:?}", id, obj);
+            //eprintln!("[GC DBG]: {:?} {:?}", id, obj);
         }
 
         for obj_id in unreachbale_ids {

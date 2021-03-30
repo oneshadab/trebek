@@ -1,5 +1,5 @@
 use crate::{
-    runtime::Runtime,
+    runtime::{Runtime, RuntimeResult},
     types::{builtin::Builtin, t_object::TObject},
 };
 
@@ -14,11 +14,11 @@ pub fn get_builtins() -> Vec<Builtin> {
 
 macro_rules! create_math_function {
   ($func_name: ident, $operation: tt) => {
-    fn $func_name(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+    fn $func_name(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
       match &args[..] {
         [arg, other_arg] => {
-          let val = ctx.eval(arg);
-          let other_val = ctx.eval(other_arg);
+          let val = ctx.eval(arg)?;
+          let other_val = ctx.eval(other_arg)?;
 
           match (val, other_val) {
             (TObject::Symbol(a), TObject::Symbol(b)) => {
@@ -26,7 +26,7 @@ macro_rules! create_math_function {
               let i_b: i32 = b.parse().unwrap();
               let i_result = i_a $operation i_b;
 
-              return TObject::Symbol(i_result.to_string());
+              Ok(TObject::Symbol(i_result.to_string()))
             }
             _ => {
               panic!("'add' called with incorrect params")

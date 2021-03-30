@@ -1,28 +1,25 @@
-use crate::{
-    runtime::Runtime,
-    types::{builtin::Builtin, t_object::TObject},
-};
+use crate::{runtime::{Runtime, RuntimeResult}, types::{builtin::Builtin, t_object::TObject}};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![Builtin::new("def", define), Builtin::new("let", let_new)]
 }
 
-fn define(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn define(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [TObject::Symbol(symbol), expr] => {
-            let val = ctx.eval(expr);
+            let val = ctx.eval(expr)?;
 
             ctx.set_global(symbol.clone(), val);
 
-            TObject::Empty
+            Ok(TObject::Empty)
         }
         _ => {
-            panic!("'def' called with incorrect number of args")
+            Err(format!("'def' called with incorrect args"))
         }
     }
 }
 
-fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
+fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [TObject::List(assignment_expr), body] => {
             let keys_and_vals = assignment_expr;
@@ -31,18 +28,20 @@ fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
             let vals: Vec<_> = keys_and_vals.iter().skip(1).step_by(2).collect();
 
             if keys.len() != vals.len() {
-                panic!("Number of symbols and vals don't match");
+                Err(format!("Number of symbols and vals don't match"))?;
             }
 
             for (key, val) in keys.into_iter().zip(vals.into_iter()) {
                 let lhs = match key {
-                    TObject::Symbol(symbol) => symbol.clone(),
+                    TObject::Symbol(symbol) => {
+                        symbol.clone()
+                    }
                     other => {
-                        panic!("{:?} is not a symbol", other)
+                        Err(format!("{} is not a symbol", other))?
                     }
                 };
 
-                let rhs = ctx.eval(val);
+                let rhs = ctx.eval(val)?;
 
                 ctx.set_local(lhs, rhs);
             }
@@ -50,7 +49,7 @@ fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> TObject {
             ctx.eval(body)
         }
         _ => {
-            panic!("'let' called with incorrent args")
+            Err(format!("'let' called with incorrent args"))
         }
     }
 }
