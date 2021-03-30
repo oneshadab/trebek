@@ -1,4 +1,6 @@
-use crate::{runtime::{Runtime, RuntimeResult}, types::closure::Closure, types::{builtin::Builtin, list::List, t_object::TObject}};
+use std::convert::TryInto;
+
+use crate::{runtime::{Runtime, RuntimeResult}, types::closure::Closure, types::{builtin::Builtin, list::List, symbol::Symbol, t_object::TObject}};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![
@@ -10,11 +12,11 @@ pub fn get_builtins() -> Vec<Builtin> {
 fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [TObject::List(params_expr), TObject::List(body_expr)] => {
-            let func = init_function(ctx, params_expr, body_expr);
+            let func = init_function(ctx, params_expr, body_expr)?;
             Ok(TObject::Closure(func))
         }
         _ => {
-            panic!("'print' called with incorrect number of args")
+            Err(format!("'print' called with incorrect number of args"))
         }
     }
 }
@@ -22,27 +24,29 @@ fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObje
 fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [TObject::Symbol(symbol), TObject::List(params_expr), TObject::List(body_expr)] => {
-            let func = init_function(ctx, params_expr, body_expr);
+            let func = init_function(ctx, params_expr, body_expr)?;
             ctx.set_global(symbol.clone(), TObject::Closure(func));
 
             Ok(TObject::Empty)
         }
         _ => {
-            panic!("'defn' called with incorrect number of args")
+            Err(format!("'defn' called with incorrect number of args"))
         }
     }
 }
 
-fn init_function(ctx: &mut Runtime, params: &List, body: &List) -> Closure {
-    let unwrapped_params = params
+fn init_function(ctx: &mut Runtime, params: &List, body: &List) -> RuntimeResult<Closure> {
+    let unwrapped_params= params
         .into_iter()
         .map(|p| match p {
-            TObject::Symbol(s) => s.clone(),
+            TObject::Symbol(s) => {
+                Ok(s.clone())
+            }
             other => {
-                panic!("{:?} param must be a symbol!", other)
+                Err(format!("`{}` param must be a symbol!", other))
             }
         })
-        .collect();
+        .collect::<RuntimeResult<Vec<Symbol>>>()?;
 
-    Closure::new(ctx, unwrapped_params, body.clone())
+    Ok(Closure::new(ctx, unwrapped_params, body.clone()))
 }

@@ -17,17 +17,17 @@ fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                 TObject::Symbol(symbol) => match symbol {
                     s if s == TRUE => ctx.eval(true_expr),
                     s if s == FALSE => ctx.eval(false_expr),
-                    _ => panic!("{:?} is not true/false!", symbol),
+                    _ => Err(format!("{:?} is not true/false!", symbol)),
                 },
                 other => {
-                    panic!("{:?} is not a boolean!", other)
+                    Err(format!("{:?} is not a boolean!", other))
                 }
             };
 
             res
         }
         _ => {
-            panic!("'print' called with incorrect number of args")
+            Err(format!("'print' called with incorrect number of args"))
         }
     }
 }
@@ -47,14 +47,14 @@ fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                     }
                 }
                 _ => {
-                    panic!("Cannot compare {:?} and {:?}", left, right)
+                    Err(format!("Cannot compare {:?} and {:?}", left, right))?
                 }
             };
 
             Ok(res)
         }
         _ => {
-            panic!("'print' called with incorrect number of args")
+            Err(format!("'print' called with incorrect number of args"))
         }
     }
 }
@@ -74,14 +74,14 @@ fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                     }
                 }
                 _ => {
-                    panic!("Cannot compare {:?} and {:?}", left, right)
+                    Err(format!("Cannot compare {:?} and {:?}", left, right))?
                 }
             };
 
             Ok(res)
         }
         _ => {
-            panic!("'print' called with incorrect number of args")
+            Err(format!("'print' called with incorrect number of args"))
         }
     }
 }

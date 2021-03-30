@@ -16,7 +16,7 @@ fn scan(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
             Ok(TObject::Symbol(word))
         }
         _ => {
-            panic!("'scan' called with incorrect number of args")
+            Err(format!("'scan' called with incorrect number of args"))
         }
     }
 }
@@ -29,7 +29,7 @@ fn print(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
             Ok(TObject::Empty)
         }
         _ => {
-            panic!("'print' called with incorrect number of args")
+            Err(format!("'print' called with incorrect number of args"))
         }
     }
 }

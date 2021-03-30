@@ -83,7 +83,7 @@ impl Runtime {
             TObject::Symbol(symbol) => self.eval_symbol(symbol)?,
             TObject::Empty => TObject::Empty,
             other => {
-                panic!("{:?} evaluation is not supported", other)
+                Err(format!("`{}` evaluation is not supported", other))?
             }
         };
 
@@ -108,7 +108,7 @@ impl Runtime {
             TObject::Builtin(builtin) => Box::new(builtin),
             TObject::Closure(func) => Box::new(func),
             other => {
-                panic!("{:?} is not callable", other)
+                Err(format!("{:?} is not callable", other))?
             }
         };
 

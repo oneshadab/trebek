@@ -24,7 +24,7 @@ impl Closure {
 impl Callable for Closure {
     fn call(&self, ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         if self.params.len() != args.len() {
-            panic!("Function called with incorrect number of params!")
+            return Err(format!("Function called with incorrect number of params!"));
         }
 
         let arg_vals: Vec<_> = args.iter().map(|arg| ctx.eval(&arg.clone())).collect();

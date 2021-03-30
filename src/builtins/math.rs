@@ -29,12 +29,12 @@ macro_rules! create_math_function {
               Ok(TObject::Symbol(i_result.to_string()))
             }
             _ => {
-              panic!("'add' called with incorrect params")
+              Err(format!("'add' called with incorrect params"))
             }
           }
         }
         _ => {
-          panic!("'add' called with incorrect number of args")
+          Err(format!("'add' called with incorrect number of args"))
         }
       }
     }
