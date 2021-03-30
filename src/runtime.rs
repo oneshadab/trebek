@@ -82,9 +82,7 @@ impl Runtime {
             TObject::List(expr) => self.eval_expression(expr)?,
             TObject::Symbol(symbol) => self.eval_symbol(symbol)?,
             TObject::Empty => TObject::Empty,
-            other => {
-                Err(format!("`{}` evaluation is not supported", other))?
-            }
+            other => Err(format!("`{}` evaluation is not supported", other))?,
         };
 
         //eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
@@ -107,9 +105,7 @@ impl Runtime {
         let callable: Box<dyn Callable> = match self.eval(func_obj)? {
             TObject::Builtin(builtin) => Box::new(builtin),
             TObject::Closure(func) => Box::new(func),
-            other => {
-                Err(format!("{:?} is not callable", other))?
-            }
+            other => Err(format!("{:?} is not callable", other))?,
         };
 
         callable.call(self, arg_objs.into())

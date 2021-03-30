@@ -1,4 +1,8 @@
-use crate::{misc::RuntimeResult, runtime::{Runtime}, types::{builtin::Builtin, t_object::TObject}};
+use crate::{
+    misc::RuntimeResult,
+    runtime::Runtime,
+    types::{builtin::Builtin, t_object::TObject},
+};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![Builtin::new("def", define), Builtin::new("let", let_new)]
@@ -13,9 +17,7 @@ fn define(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 
             Ok(TObject::Empty)
         }
-        _ => {
-            Err(format!("'def' called with incorrect args"))
-        }
+        _ => Err(format!("'def' called with incorrect args")),
     }
 }
 
@@ -33,12 +35,8 @@ fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 
             for (key, val) in keys.into_iter().zip(vals.into_iter()) {
                 let lhs = match key {
-                    TObject::Symbol(symbol) => {
-                        symbol.clone()
-                    }
-                    other => {
-                        Err(format!("{} is not a symbol", other))?
-                    }
+                    TObject::Symbol(symbol) => symbol.clone(),
+                    other => Err(format!("{} is not a symbol", other))?,
                 };
 
                 let rhs = ctx.eval(val)?;
@@ -48,8 +46,6 @@ fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 
             ctx.eval(body)
         }
-        _ => {
-            Err(format!("'let' called with incorrent args"))
-        }
+        _ => Err(format!("'let' called with incorrent args")),
     }
 }

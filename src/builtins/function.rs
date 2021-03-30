@@ -1,6 +1,9 @@
-use std::convert::TryInto;
-
-use crate::{misc::RuntimeResult, runtime::{Runtime}, types::closure::Closure, types::{builtin::Builtin, list::List, symbol::Symbol, t_object::TObject}};
+use crate::{
+    misc::RuntimeResult,
+    runtime::Runtime,
+    types::closure::Closure,
+    types::{builtin::Builtin, list::List, symbol::Symbol, t_object::TObject},
+};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![
@@ -15,9 +18,7 @@ fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObje
             let func = init_function(ctx, params_expr, body_expr)?;
             Ok(TObject::Closure(func))
         }
-        _ => {
-            Err(format!("'print' called with incorrect number of args"))
-        }
+        _ => Err(format!("'print' called with incorrect number of args")),
     }
 }
 
@@ -29,22 +30,16 @@ fn define_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObje
 
             Ok(TObject::Empty)
         }
-        _ => {
-            Err(format!("'defn' called with incorrect number of args"))
-        }
+        _ => Err(format!("'defn' called with incorrect number of args")),
     }
 }
 
 fn init_function(ctx: &mut Runtime, params: &List, body: &List) -> RuntimeResult<Closure> {
-    let unwrapped_params= params
+    let unwrapped_params = params
         .into_iter()
         .map(|p| match p {
-            TObject::Symbol(s) => {
-                Ok(s.clone())
-            }
-            other => {
-                Err(format!("`{}` param must be a symbol!", other))
-            }
+            TObject::Symbol(s) => Ok(s.clone()),
+            other => Err(format!("`{}` param must be a symbol!", other)),
         })
         .collect::<RuntimeResult<Vec<Symbol>>>()?;
 

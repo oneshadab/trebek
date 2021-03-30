@@ -1,6 +1,5 @@
 use std::io::{self, stdin, Write};
 
-
 use crate::misc::RuntimeResult;
 
 use super::{parser::Parser, runtime::Runtime, types::t_object::TObject};
@@ -21,8 +20,10 @@ impl Repl {
     pub fn next(&mut self) {
         let program = self.read().unwrap();
         let output = match self.eval(program) {
-            Ok(out) => { out }
-            Err(e) => { format!("Error: {}", e.to_string()) }
+            Ok(out) => out,
+            Err(e) => {
+                format!("Error: {}", e.to_string())
+            }
         };
         println!("{}", output);
     }

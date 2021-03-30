@@ -1,5 +1,9 @@
-use crate::{misc::RuntimeResult, runtime::{Runtime}, types::{builtin::Builtin, t_object::TObject}};
 use crate::try_or_bubble;
+use crate::{
+    misc::RuntimeResult,
+    runtime::Runtime,
+    types::{builtin::Builtin, t_object::TObject},
+};
 use std::io::{BufRead, Write};
 
 pub fn get_builtins() -> Vec<Builtin> {
@@ -17,9 +21,7 @@ fn scan(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 
             Ok(TObject::Symbol(word))
         }
-        _ => {
-            Err(format!("'scan' called with incorrect number of args"))
-        }
+        _ => Err(format!("'scan' called with incorrect number of args")),
     }
 }
 
@@ -32,8 +34,6 @@ fn print(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 
             Ok(TObject::Empty)
         }
-        _ => {
-            Err(format!("'print' called with incorrect number of args"))
-        }
+        _ => Err(format!("'print' called with incorrect number of args")),
     }
 }

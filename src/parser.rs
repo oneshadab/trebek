@@ -1,4 +1,3 @@
-
 use crate::misc::RuntimeResult;
 
 use super::types::{list::List, t_object::TObject};
@@ -87,9 +86,7 @@ impl Parser {
         match &trimmed_buffer {
             ['(', inside @ .., ')'] => Ok(inside.iter().collect()),
             [] => Ok(String::from("")),
-            _ => {
-                Err(format!("`{}` is not an expression", expr))
-            }
+            _ => Err(format!("`{}` is not an expression", expr)),
         }
     }
 }

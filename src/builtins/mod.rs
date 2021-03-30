@@ -2,10 +2,10 @@ use super::types::builtin::Builtin;
 
 mod conditional;
 mod function;
+mod internal_utils;
 mod io;
 mod math;
 mod scope;
-mod internal_utils;
 
 pub fn get_builtins() -> Vec<Builtin> {
     [

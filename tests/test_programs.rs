@@ -12,7 +12,10 @@ pub mod tests {
     use tempfile;
     use test_generator::test_resources;
 
-    use trebek::{io_helpers::{input_stream::InputStream, output_stream::OutputStream}, repl::Repl};
+    use trebek::{
+        io_helpers::{input_stream::InputStream, output_stream::OutputStream},
+        repl::Repl,
+    };
 
     #[test_resources("tests/res/programs/*")]
     fn verify(program_dir: &str) {
@@ -32,7 +35,8 @@ pub mod tests {
 
         let mut runner = Repl::new();
         runner.runtime.reader = io::BufReader::new(InputStream::File(input_file));
-        runner.runtime.writer = io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
+        runner.runtime.writer =
+            io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
 
         runner.eval(program);
 

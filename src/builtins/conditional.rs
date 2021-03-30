@@ -1,4 +1,10 @@
-use crate::{constants::{FALSE, TRUE}, misc::RuntimeResult, runtime::{Runtime}, types::builtin::Builtin, types::t_object::TObject};
+use crate::{
+    constants::{FALSE, TRUE},
+    misc::RuntimeResult,
+    runtime::Runtime,
+    types::builtin::Builtin,
+    types::t_object::TObject,
+};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![
@@ -19,16 +25,12 @@ fn cond_if(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                     s if s == FALSE => ctx.eval(false_expr),
                     _ => Err(format!("{:?} is not true/false!", symbol)),
                 },
-                other => {
-                    Err(format!("{:?} is not a boolean!", other))
-                }
+                other => Err(format!("{:?} is not a boolean!", other)),
             };
 
             res
         }
-        _ => {
-            Err(format!("'print' called with incorrect number of args"))
-        }
+        _ => Err(format!("'print' called with incorrect number of args")),
     }
 }
 
@@ -46,16 +48,12 @@ fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                         TObject::Symbol(FALSE.into())
                     }
                 }
-                _ => {
-                    Err(format!("Cannot compare {:?} and {:?}", left, right))?
-                }
+                _ => Err(format!("Cannot compare {:?} and {:?}", left, right))?,
             };
 
             Ok(res)
         }
-        _ => {
-            Err(format!("'print' called with incorrect number of args"))
-        }
+        _ => Err(format!("'print' called with incorrect number of args")),
     }
 }
 
@@ -73,15 +71,11 @@ fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                         TObject::Symbol(FALSE.into())
                     }
                 }
-                _ => {
-                    Err(format!("Cannot compare {:?} and {:?}", left, right))?
-                }
+                _ => Err(format!("Cannot compare {:?} and {:?}", left, right))?,
             };
 
             Ok(res)
         }
-        _ => {
-            Err(format!("'print' called with incorrect number of args"))
-        }
+        _ => Err(format!("'print' called with incorrect number of args")),
     }
 }
