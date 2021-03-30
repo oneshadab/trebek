@@ -1,5 +1,5 @@
 use std::fmt;
-use crate::lang::runtime::Runtime;
+use crate::runtime::Runtime;
 
 use super::{callable::Callable, t_object::TObject};
 

@@ -1,7 +1,4 @@
-
-mod lang;
-use lang::runner::{Runner};
-
+use trebek::runner::Runner;
 
 
 fn main() {

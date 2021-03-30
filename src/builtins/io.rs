@@ -1,5 +1,5 @@
 use std::io::{BufRead, Write};
-use crate::lang::{runtime::Runtime, types::{builtin::Builtin, t_object::TObject}};
+use crate::{runtime::Runtime, types::{builtin::Builtin, t_object::TObject}};
 
 
 pub fn get_builtins() -> Vec<Builtin>{

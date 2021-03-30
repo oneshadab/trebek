@@ -1,6 +1,6 @@
 use std::{collections::HashMap};
 
-use crate::lang::memory::object_heap::ObjectId;
+use crate::memory::object_heap::ObjectId;
 
 use super::symbol::Symbol;
 

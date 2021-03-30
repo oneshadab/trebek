@@ -1,4 +1,4 @@
-use crate::lang::runtime::Runtime;
+use crate::runtime::Runtime;
 
 use super::t_object::TObject;
 

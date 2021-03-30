@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::lang::types::t_object::TObject;
+use crate::types::t_object::TObject;
 
 
 pub type ObjectId = usize;

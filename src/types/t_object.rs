@@ -1,4 +1,4 @@
-use crate::lang::memory::object_heap::ObjectId;
+use crate::memory::object_heap::ObjectId;
 
 use super::{builtin::Builtin, closure::Closure, list::List, scope::Scope, symbol::Symbol};
 
