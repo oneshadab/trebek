@@ -1,13 +1,15 @@
-use crate::{runtime::Runtime, types::{builtin::Builtin, t_object::TObject}};
-
+use crate::{
+    runtime::Runtime,
+    types::{builtin::Builtin, t_object::TObject},
+};
 
 pub fn get_builtins() -> Vec<Builtin> {
-  vec![
-    Builtin::new("+", add),
-    Builtin::new("-", subtract),
-    Builtin::new("*", multiply),
-    Builtin::new("/", divide),
-  ]
+    vec![
+        Builtin::new("+", add),
+        Builtin::new("-", subtract),
+        Builtin::new("*", multiply),
+        Builtin::new("/", divide),
+    ]
 }
 
 macro_rules! create_math_function {

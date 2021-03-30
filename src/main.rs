@@ -1,9 +1,6 @@
-use std::io::stdin;
-
-use trebek::{repl::repl, runner::Runner};
-
+use trebek::repl::repl;
 
 fn main() {
-  println!("Trebek shell v0.1");
-  repl();
+    println!("Trebek shell v0.1");
+    repl();
 }

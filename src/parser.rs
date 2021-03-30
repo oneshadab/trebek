@@ -1,95 +1,90 @@
 use super::types::{list::List, t_object::TObject};
 
-
-pub struct Parser {
-}
+pub struct Parser {}
 
 impl Parser {
-  pub fn new() -> Parser {
-    Parser {}
-  }
+    pub fn new() -> Parser {
+        Parser {}
+    }
 
-  pub fn parse(&mut self, expr: &String) -> List {
-    let tokens = self.tokenize(&self.trim_expression(expr));
+    pub fn parse(&mut self, expr: &String) -> List {
+        let tokens = self.tokenize(&self.trim_expression(expr));
 
-    tokens
-      .iter()
-      .map(|token| {
-        let chars: Vec<char> = token.chars().collect();
+        tokens
+            .iter()
+            .map(|token| {
+                let chars: Vec<char> = token.chars().collect();
 
-        match chars[..] {
-          [] => {
-            TObject::Empty
-          }
-          ['(', .., ')'] => {
-            let inner_list = self.parse(token);
-            TObject::List(inner_list)
-          },
-          _ => {
-            TObject::Symbol(token.into())
-          }
+                match chars[..] {
+                    [] => TObject::Empty,
+                    ['(', .., ')'] => {
+                        let inner_list = self.parse(token);
+                        TObject::List(inner_list)
+                    }
+                    _ => TObject::Symbol(token.into()),
+                }
+            })
+            .collect()
+    }
+
+    pub fn tokenize(&mut self, text: &String) -> Vec<String> {
+        let mut tokens: Vec<String> = Vec::new();
+
+        let mut buffer: Vec<char> = Vec::new();
+        let mut depth = 0;
+
+        for ch in text.chars() {
+            if depth == 0 && self.is_white_space(ch) {
+                if !buffer.is_empty() {
+                    tokens.push(buffer.iter().collect());
+                    buffer.clear();
+                }
+            } else {
+                if ch == '(' {
+                    depth += 1;
+                }
+
+                if ch == ')' {
+                    depth -= 1;
+                }
+
+                buffer.push(ch);
+            }
         }
-      })
-      .collect()
-  }
 
-  pub fn tokenize(&mut self, text: &String) -> Vec<String> {
-    let mut tokens: Vec<String> = Vec::new();
-
-    let mut buffer: Vec<char> = Vec::new();
-    let mut depth = 0;
-
-    for ch in text.chars() {
-      if depth == 0 && self.is_white_space(ch) {
         if !buffer.is_empty() {
-          tokens.push( buffer.iter().collect() );
-          buffer.clear();
-        }
-      }
-      else {
-        if ch == '(' {
-          depth += 1;
+            tokens.push(buffer.iter().collect());
+            buffer.clear();
         }
 
-        if ch == ')' {
-          depth -= 1;
+        return tokens;
+    }
+
+    fn is_white_space(&self, ch: char) -> bool {
+        let whitespace_chars = [' ', '\t', '\n'];
+        return whitespace_chars.contains(&ch);
+    }
+
+    fn trim_expression(&self, expr: &String) -> String {
+        let char_buffer: Vec<_> = expr.chars().collect();
+
+        let mut new_start = 0;
+        while self.is_white_space(char_buffer[new_start]) {
+            new_start += 1;
         }
 
-        buffer.push(ch);
-      }
+        let mut new_end = char_buffer.len() - 1;
+        while self.is_white_space(char_buffer[new_end]) {
+            new_end -= 1;
+        }
+
+        let trimmed_buffer = &char_buffer[new_start..new_end + 1];
+        match &trimmed_buffer {
+            ['(', inside @ .., ')'] => inside.iter().collect(),
+            [] => String::from(""),
+            _ => {
+                panic!("{} is not an expression!", expr)
+            }
+        }
     }
-
-    if !buffer.is_empty() {
-      tokens.push( buffer.iter().collect() );
-      buffer.clear();
-    }
-
-    return tokens;
-  }
-
-  fn is_white_space(&self, ch: char) -> bool {
-    let whitespace_chars = [' ', '\t', '\n'];
-    return whitespace_chars.contains(&ch);
-  }
-
-  fn trim_expression(&self, expr: &String) -> String {
-    let char_buffer: Vec<_> = expr.chars().collect();
-
-    let mut new_start = 0;
-    while self.is_white_space(char_buffer[new_start]) {
-      new_start += 1;
-    }
-
-    let mut new_end = char_buffer.len() - 1;
-    while self.is_white_space(char_buffer[new_end]) {
-      new_end -= 1;
-    }
-
-    let trimmed_buffer = &char_buffer[new_start .. new_end+1];
-    match &trimmed_buffer {
-      ['(', inside @ .., ')'] => { inside.iter().collect() }
-      [] => { String::from("") }
-      _ => { panic!("{} is not an expression!", expr) }
-    }
-  }
 }
