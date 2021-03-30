@@ -13,9 +13,9 @@ fn define(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         [TObject::Symbol(symbol), expr] => {
             let val = ctx.eval(expr)?;
 
-            ctx.set_global(symbol.clone(), val);
+            ctx.set_global(symbol.clone(), val.clone());
 
-            Ok(TObject::Empty)
+            Ok(val)
         }
         _ => Err(format!("'def' called with incorrect args")),
     }
