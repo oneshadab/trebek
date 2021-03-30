@@ -1,5 +1,7 @@
 use std::io::{self, BufReader, BufWriter};
 
+use crate::misc::RuntimeResult;
+
 use super::{
     builtins,
     io_helpers::input_stream::InputStream,
@@ -23,8 +25,6 @@ pub struct Runtime {
     pub reader: BufReader<InputStream>,
     pub writer: BufWriter<OutputStream>,
 }
-
-pub type RuntimeResult<T> = Result<T, String>;
 
 impl Runtime {
     pub fn new() -> Runtime {

@@ -1,6 +1,6 @@
 use std::convert::TryInto;
 
-use crate::{runtime::{Runtime, RuntimeResult}, types::closure::Closure, types::{builtin::Builtin, list::List, symbol::Symbol, t_object::TObject}};
+use crate::{misc::RuntimeResult, runtime::{Runtime}, types::closure::Closure, types::{builtin::Builtin, list::List, symbol::Symbol, t_object::TObject}};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![

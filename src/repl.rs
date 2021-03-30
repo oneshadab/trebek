@@ -1,6 +1,7 @@
 use std::io::{self, stdin, Write};
 
-use crate::runtime::RuntimeResult;
+
+use crate::misc::RuntimeResult;
 
 use super::{parser::Parser, runtime::Runtime, types::t_object::TObject};
 

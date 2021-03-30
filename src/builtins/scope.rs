@@ -1,4 +1,4 @@
-use crate::{runtime::{Runtime, RuntimeResult}, types::{builtin::Builtin, t_object::TObject}};
+use crate::{misc::RuntimeResult, runtime::{Runtime}, types::{builtin::Builtin, t_object::TObject}};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![Builtin::new("def", define), Builtin::new("let", let_new)]

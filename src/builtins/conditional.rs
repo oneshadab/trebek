@@ -1,4 +1,4 @@
-use crate::{constants::{FALSE, TRUE}, runtime::{Runtime, RuntimeResult}, types::builtin::Builtin, types::t_object::TObject};
+use crate::{constants::{FALSE, TRUE}, misc::RuntimeResult, runtime::{Runtime}, types::builtin::Builtin, types::t_object::TObject};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![

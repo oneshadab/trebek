@@ -1,4 +1,4 @@
-use crate::runtime::{Runtime, RuntimeResult};
+use crate::{misc::RuntimeResult, runtime::{Runtime}};
 use std::fmt;
 
 use super::{callable::Callable, t_object::TObject};

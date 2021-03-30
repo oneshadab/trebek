@@ -1,4 +1,4 @@
-use crate::runtime::{Runtime, RuntimeResult};
+use crate::{misc::RuntimeResult, runtime::{Runtime}};
 
 use super::{callable::Callable, list::List, symbol::Symbol, t_object::TObject};
 
