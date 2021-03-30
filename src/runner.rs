@@ -13,7 +13,7 @@ impl Runner {
     }
   }
 
-  pub fn run(&mut self, program: String) -> String {
+  pub fn eval(&mut self, program: String) -> String {
     let exprs = self.parser.tokenize(&program);
 
     let mut out = TObject::Empty;

@@ -6,3 +6,4 @@ pub mod constants;
 pub mod io_helpers;
 pub mod runner;
 pub mod memory;
+pub mod repl;

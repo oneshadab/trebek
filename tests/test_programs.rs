@@ -29,7 +29,7 @@ pub mod tests {
     runner.runtime.reader = io::BufReader::new(InputStream::File(input_file));
     runner.runtime.writer =  io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
 
-    runner.run(program);
+    runner.eval(program);
 
     runner.runtime.writer.flush().unwrap();
 
