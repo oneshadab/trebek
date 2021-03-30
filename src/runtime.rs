@@ -24,6 +24,8 @@ pub struct Runtime {
     pub writer: BufWriter<OutputStream>,
 }
 
+pub type RuntimeResult<T> = Result<T, String>;
+
 impl Runtime {
     pub fn new() -> Runtime {
         let mut heap = ObjectHeap::new();
