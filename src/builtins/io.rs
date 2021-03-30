@@ -1,4 +1,5 @@
 use crate::{misc::RuntimeResult, runtime::{Runtime}, types::{builtin::Builtin, t_object::TObject}};
+use crate::try_or_bubble;
 use std::io::{BufRead, Write};
 
 pub fn get_builtins() -> Vec<Builtin> {
@@ -10,7 +11,8 @@ fn scan(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         [] => {
             let mut word = String::new();
 
-            ctx.reader.read_line(&mut word).unwrap();
+            try_or_bubble!(ctx.reader.read_line(&mut word));
+
             word.pop(); // Remove trailing newline
 
             Ok(TObject::Symbol(word))
@@ -25,7 +27,9 @@ fn print(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [symbol] => {
             let val = ctx.eval(symbol)?;
-            writeln!(&mut ctx.writer, "{}", val).unwrap();
+
+            try_or_bubble!(writeln!(&mut ctx.writer, "{}", val));
+
             Ok(TObject::Empty)
         }
         _ => {

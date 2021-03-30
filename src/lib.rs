@@ -6,4 +6,4 @@ pub mod parser;
 pub mod repl;
 pub mod runtime;
 pub mod types;
-pub mod misc;
+#[macro_use] pub mod misc;
