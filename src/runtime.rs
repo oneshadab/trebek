@@ -73,21 +73,21 @@ impl Runtime {
         self.get_mut_scope(scope_id).set(key, val);
     }
 
-    pub fn eval(&mut self, obj: &TObject) -> TObject {
+    pub fn eval(&mut self, obj: &TObject) -> RuntimeResult<TObject> {
         self.save_current_scope();
 
         self.new_child_scope();
 
         let output = match obj {
-            TObject::List(expr) => self.eval_expression(expr),
-            TObject::Symbol(symbol) => self.eval_symbol(symbol),
+            TObject::List(expr) => self.eval_expression(expr)?,
+            TObject::Symbol(symbol) => self.eval_symbol(symbol)?,
             TObject::Empty => TObject::Empty,
             other => {
                 panic!("{:?} evaluation is not supported", other)
             }
         };
 
-        eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
+        //eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
 
         self.restore_saved_scope();
 
@@ -97,14 +97,14 @@ impl Runtime {
 
         self.run_gc();
 
-        output
+        Ok(output)
     }
 
-    fn eval_expression(&mut self, list: &List) -> TObject {
+    fn eval_expression(&mut self, list: &List) -> RuntimeResult<TObject> {
         let func_obj = &list[0];
         let arg_objs = &list[1..];
 
-        let callable: Box<dyn Callable> = match self.eval(func_obj) {
+        let callable: Box<dyn Callable> = match self.eval(func_obj)? {
             TObject::Builtin(builtin) => Box::new(builtin),
             TObject::Closure(func) => Box::new(func),
             other => {
@@ -115,9 +115,9 @@ impl Runtime {
         callable.call(self, arg_objs.into())
     }
 
-    fn eval_symbol(&mut self, symbol: &String) -> TObject {
+    fn eval_symbol(&mut self, symbol: &String) -> RuntimeResult<TObject> {
         let default = TObject::Symbol(symbol.clone().into());
-        self.lookup(symbol).unwrap_or(&default).clone()
+        Ok(self.lookup(symbol).unwrap_or(&default).clone())
     }
 
     pub fn new_child_scope(&mut self) {

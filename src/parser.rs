@@ -1,3 +1,5 @@
+use crate::runtime::RuntimeResult;
+
 use super::types::{list::List, t_object::TObject};
 
 pub struct Parser {}
@@ -7,22 +9,24 @@ impl Parser {
         Parser {}
     }
 
-    pub fn parse(&mut self, expr: &String) -> List {
-        let tokens = self.tokenize(&self.trim_expression(expr));
+    pub fn parse(&mut self, expr: &String) -> RuntimeResult<List> {
+        let tokens = self.tokenize(&self.trim_expression(expr)?);
 
         tokens
             .iter()
-            .map(|token| {
+            .map(|token| -> RuntimeResult<TObject> {
                 let chars: Vec<char> = token.chars().collect();
 
-                match chars[..] {
+                let obj = match chars[..] {
                     [] => TObject::Empty,
                     ['(', .., ')'] => {
-                        let inner_list = self.parse(token);
+                        let inner_list = self.parse(token)?;
                         TObject::List(inner_list)
                     }
                     _ => TObject::Symbol(token.into()),
-                }
+                };
+
+                Ok(obj)
             })
             .collect()
     }
@@ -65,7 +69,7 @@ impl Parser {
         return whitespace_chars.contains(&ch);
     }
 
-    fn trim_expression(&self, expr: &String) -> String {
+    fn trim_expression(&self, expr: &String) -> RuntimeResult<String> {
         let char_buffer: Vec<_> = expr.chars().collect();
 
         let mut new_start = 0;
@@ -80,10 +84,10 @@ impl Parser {
 
         let trimmed_buffer = &char_buffer[new_start..new_end + 1];
         match &trimmed_buffer {
-            ['(', inside @ .., ')'] => inside.iter().collect(),
-            [] => String::from(""),
+            ['(', inside @ .., ')'] => Ok(inside.iter().collect()),
+            [] => Ok(String::from("")),
             _ => {
-                panic!("{} is not an expression!", expr)
+                Err(format!("`{}` is not an expression", expr))
             }
         }
     }
