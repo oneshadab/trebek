@@ -1,4 +1,4 @@
-use std::io::{self, stdin, Write};
+use std::io::{Write, stdin, stdout};
 
 use crate::misc::RuntimeResult;
 
@@ -17,8 +17,8 @@ impl Repl {
         }
     }
 
-    pub fn next(&mut self) {
-        let program = self.read().unwrap();
+    pub fn prompt(&mut self) {
+        let program = self.read_expr().unwrap();
         let output = match self.eval(program) {
             Ok(out) => out,
             Err(e) => {
@@ -28,13 +28,40 @@ impl Repl {
         println!("{}", output);
     }
 
-    pub fn read(&self) -> Result<String, String> {
-        let mut program = String::new();
+    pub fn read_expr(&self) -> Result<String, String> {
+        let mut lines: Vec<String> = vec![];
 
-        match stdin().read_line(&mut program) {
-            Ok(_) => Ok(program),
-            Err(e) => Err(e.to_string()),
+        let mut depth = 0;
+
+        print!(">>> ");
+
+        loop {
+            stdout().flush().ok().expect("Could not flush stdout");
+
+            let mut buffer = String::new();
+            if let Err(e) = stdin().read_line(&mut buffer) {
+                return Err(e.to_string());
+            }
+
+            for ch in buffer.chars() {
+                if ch == '(' {
+                    depth += 1;
+                }
+                if ch == ')' {
+                    depth -= 1;
+                }
+            }
+
+            lines.push(buffer);
+
+            if depth == 0 {
+                break;
+            }
+
+            print!("... ")
         }
+
+        Ok(lines.join(""))
     }
 
     pub fn eval(&mut self, program: String) -> RuntimeResult<String> {
