@@ -4,6 +4,5 @@ pub mod io_helpers;
 pub mod memory;
 pub mod parser;
 pub mod repl;
-pub mod runner;
 pub mod runtime;
 pub mod types;

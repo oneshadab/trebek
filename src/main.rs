@@ -1,6 +1,15 @@
-use trebek::repl::repl;
+use std::io::{self, Write};
+
+use trebek::repl::Repl;
 
 fn main() {
     println!("Trebek shell v0.1");
-    repl();
+    let mut repl = Repl::new();
+
+    loop {
+        print!("> ");
+        io::stdout().flush().ok().expect("Could not flush stdout");
+
+        repl.next();
+    }
 }
