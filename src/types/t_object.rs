@@ -12,6 +12,33 @@ pub enum TObject {
     Empty,
 }
 
+impl std::fmt::Display for TObject {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TObject::Closure(_) => {
+                write!(f, "[Closure]")
+            }
+            TObject::Builtin(_) => {
+                write!(f, "[Builtin]")
+            }
+            TObject::Symbol(sym) => {
+                write!(f, "{}", sym)
+            }
+            TObject::List(list) => {
+                write!(f, "(")?;
+                list.iter().try_for_each(|obj| write!(f, "{}", obj))?;
+                write!(f, ")")
+            }
+            TObject::Scope(_) => {
+                write!(f, "[Scope]")
+            }
+            TObject::Empty => {
+                write!(f, "")
+            }
+        }
+    }
+}
+
 impl TObject {
     pub fn trace(&self) -> Vec<ObjectId> {
         match self {

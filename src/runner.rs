@@ -23,6 +23,6 @@ impl Runner {
             out = self.runtime.eval(&TObject::List(list));
         }
 
-        format!("{:?}", out)
+        format!("{}", out)
     }
 }
