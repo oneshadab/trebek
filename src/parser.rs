@@ -1,4 +1,4 @@
-use crate::{misc::RuntimeResult, types::symbol::Symbol};
+use crate::{misc::RuntimeResult, types::{string_literal::TString, symbol::Symbol}};
 
 use super::types::{list::List, t_object::TObject};
 
@@ -25,7 +25,7 @@ impl Parser {
     fn next_list(&mut self) -> RuntimeResult<List> {
         let mut tokens: List = List::new();
 
-        self.next_ch()?;
+        self.next_char()?;
 
         while !self.done() {
             let ch = self.peek()?;
@@ -36,11 +36,15 @@ impl Parser {
                     tokens.push(TObject::List(inner_list));
                 },
                 ')' => {
-                    self.next_ch()?;
+                    self.next_char()?;
                     break;
                 }
+                '"' => {
+                    let inner_string = self.next_string()?;
+                    tokens.push(TObject::String(inner_string));
+                }
                 ch if ch.is_whitespace() => {
-                    self.next_ch()?;
+                    self.next_char()?;
                 }
                 _ => {
                     let sym = self.next_symbol()?;
@@ -50,6 +54,28 @@ impl Parser {
         }
 
         Ok(tokens)
+    }
+
+    fn next_string(&mut self) -> RuntimeResult<TString> {
+        let mut chars: Vec<char> = Vec::new();
+
+        self.next_char()?;
+
+        while !self.done() {
+            let ch = self.peek()?;
+
+            if ch == '"' {
+                self.next_char()?;
+                break;
+            }
+
+            chars.push(ch);
+
+            self.next_char()?;
+        }
+
+        let s = chars.iter().collect();
+        Ok(s)
     }
 
     fn next_symbol(&mut self) -> RuntimeResult<Symbol> {
@@ -64,11 +90,17 @@ impl Parser {
 
             chars.push(ch);
 
-            self.next_ch()?;
+            self.next_char()?;
         }
 
         let sym = chars.iter().collect();
         Ok(sym)
+    }
+
+    fn next_char(&mut self) -> RuntimeResult<char> {
+        let ch = self.peek()?;
+        self.pos += 1;
+        Ok(ch)
     }
 
     fn peek(&self) -> RuntimeResult<char> {
@@ -76,12 +108,6 @@ impl Parser {
             Some(ch) => { Ok(ch.clone()) }
             None => { Err(format!("Token out of bounds")) }
         }
-    }
-
-    fn next_ch(&mut self) -> RuntimeResult<char> {
-        let ch = self.peek()?;
-        self.pos += 1;
-        Ok(ch)
     }
 
     fn done(&self) -> bool{
