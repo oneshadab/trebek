@@ -1,4 +1,4 @@
-use std::io::{self, BufReader, BufWriter};
+use std::{env, io::{self, BufReader, BufWriter}};
 
 use crate::misc::RuntimeResult;
 
@@ -85,7 +85,9 @@ impl Runtime {
             other => Err(format!("`{}` evaluation is not supported", other))?,
         };
 
-        //eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
+        if let Ok(_) = env::var("DEBUG") {
+            eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
+        }
 
         self.restore_saved_scope();
 
