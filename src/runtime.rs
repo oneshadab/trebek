@@ -1,6 +1,6 @@
 use std::{env, io::{self, BufReader, BufWriter}};
 
-use crate::misc::RuntimeResult;
+use crate::{misc::RuntimeResult};
 
 use super::{
     builtins,
@@ -81,6 +81,7 @@ impl Runtime {
         let output = match obj {
             TObject::List(expr) => self.eval_expression(expr)?,
             TObject::Symbol(symbol) => self.eval_symbol(symbol)?,
+            TObject::String(s) => TObject::String(s.clone()),
             TObject::Empty => TObject::Empty,
             other => Err(format!("`{}` evaluation is not supported", other))?,
         };

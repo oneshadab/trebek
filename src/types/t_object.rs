@@ -1,12 +1,13 @@
 use crate::memory::object_heap::ObjectId;
 
-use super::{builtin::Builtin, closure::Closure, list::List, scope::Scope, symbol::Symbol};
+use super::{builtin::Builtin, closure::Closure, list::List, scope::Scope, string_literal::TString, symbol::{Symbol}};
 
 #[derive(Debug, Clone)]
 pub enum TObject {
     Closure(Closure),
     Builtin(Builtin),
     Symbol(Symbol),
+    String(TString),
     List(List),
     Scope(Scope),
     Empty,
@@ -34,6 +35,9 @@ impl std::fmt::Display for TObject {
             }
             TObject::Empty => {
                 write!(f, "")
+            }
+            TObject::String(s) => {
+                write!(f, "{}", s)
             }
         }
     }
