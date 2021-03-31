@@ -1,34 +1,91 @@
-use crate::misc::RuntimeResult;
+use crate::{misc::RuntimeResult, types::symbol::Symbol};
 
 use super::types::{list::List, t_object::TObject};
 
-pub struct Parser {}
+pub struct Parser {
+    text: Vec<char>,
+    pos: usize,
+}
 
 impl Parser {
     pub fn new() -> Parser {
-        Parser {}
+        Parser {
+            text: Vec::new(),
+            pos: 0,
+        }
     }
 
     pub fn parse(&mut self, expr: &String) -> RuntimeResult<List> {
-        let tokens = self.tokenize(&self.trim_expression(expr)?);
+        let trimmed_expr = self.trim_expression(expr)?;
+        self.text = trimmed_expr.chars().collect();
+        self.pos = 0;
+        self.next_list()
+    }
 
-        tokens
-            .iter()
-            .map(|token| -> RuntimeResult<TObject> {
-                let chars: Vec<char> = token.chars().collect();
+    fn next_list(&mut self) -> RuntimeResult<List> {
+        let mut tokens: List = List::new();
 
-                let obj = match chars[..] {
-                    [] => TObject::Empty,
-                    ['(', .., ')'] => {
-                        let inner_list = self.parse(token)?;
-                        TObject::List(inner_list)
-                    }
-                    _ => TObject::Symbol(token.into()),
-                };
+        self.next_ch()?;
 
-                Ok(obj)
-            })
-            .collect()
+        while !self.done() {
+            let ch = self.peek()?;
+
+            match ch {
+                '(' => {
+                    let inner_list = self.next_list()?;
+                    tokens.push(TObject::List(inner_list));
+                },
+                ')' => {
+                    self.next_ch()?;
+                    break;
+                }
+                ch if ch.is_whitespace() => {
+                    self.next_ch()?;
+                }
+                _ => {
+                    let sym = self.next_symbol()?;
+                    tokens.push(TObject::Symbol(sym));
+                }
+            }
+        }
+
+        Ok(tokens)
+    }
+
+    fn next_symbol(&mut self) -> RuntimeResult<Symbol> {
+        let mut chars: Vec<char> = Vec::new();
+
+        while !self.done() {
+            let ch = self.peek()?;
+
+            if ch.is_whitespace() || ch == '(' || ch == ')' {
+                break;
+            }
+
+            chars.push(ch);
+
+            self.next_ch()?;
+        }
+
+        let sym = chars.iter().collect();
+        Ok(sym)
+    }
+
+    fn peek(&self) -> RuntimeResult<char> {
+        match self.text.get(self.pos) {
+            Some(ch) => { Ok(ch.clone()) }
+            None => { Err(format!("Token out of bounds")) }
+        }
+    }
+
+    fn next_ch(&mut self) -> RuntimeResult<char> {
+        let ch = self.peek()?;
+        self.pos += 1;
+        Ok(ch)
+    }
+
+    fn done(&self) -> bool{
+        self.pos >= self.text.len()
     }
 
     pub fn tokenize(&mut self, text: &String) -> Vec<String> {
@@ -82,11 +139,7 @@ impl Parser {
             new_end -= 1;
         }
 
-        let trimmed_buffer = &char_buffer[new_start..new_end + 1];
-        match &trimmed_buffer {
-            ['(', inside @ .., ')'] => Ok(inside.iter().collect()),
-            [] => Ok(String::from("")),
-            _ => Err(format!("`{}` is not an expression", expr)),
-        }
+        let trimmed_buffer = &char_buffer[new_start..new_end];
+        Ok(trimmed_buffer.iter().collect())
     }
 }
