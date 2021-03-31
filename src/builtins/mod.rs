@@ -6,6 +6,7 @@ mod internal_utils;
 mod io;
 mod math;
 mod scope;
+mod string;
 
 pub fn get_builtins() -> Vec<Builtin> {
     [
@@ -14,6 +15,7 @@ pub fn get_builtins() -> Vec<Builtin> {
         function::get_builtins(),
         conditional::get_builtins(),
         scope::get_builtins(),
+        string::get_builtins(),
     ]
     .concat()
 }
