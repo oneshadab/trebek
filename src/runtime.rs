@@ -1,6 +1,9 @@
-use std::{env, io::{self, BufReader, BufWriter}};
+use std::{
+    env,
+    io::{self, BufReader, BufWriter},
+};
 
-use crate::{misc::RuntimeResult};
+use crate::misc::RuntimeResult;
 
 use super::{
     builtins,

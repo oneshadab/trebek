@@ -1,4 +1,7 @@
-use crate::{misc::RuntimeResult, types::{string_literal::TString, symbol::Symbol}};
+use crate::{
+    misc::RuntimeResult,
+    types::{string_literal::TString, symbol::Symbol},
+};
 
 use super::types::{list::List, t_object::TObject};
 
@@ -34,7 +37,7 @@ impl Parser {
                 '(' => {
                     let inner_list = self.next_list()?;
                     tokens.push(TObject::List(inner_list));
-                },
+                }
                 ')' => {
                     self.next_char()?;
                     break;
@@ -105,12 +108,12 @@ impl Parser {
 
     fn peek(&self) -> RuntimeResult<char> {
         match self.text.get(self.pos) {
-            Some(ch) => { Ok(ch.clone()) }
-            None => { Err(format!("Token out of bounds")) }
+            Some(ch) => Ok(ch.clone()),
+            None => Err(format!("Token out of bounds")),
         }
     }
 
-    fn done(&self) -> bool{
+    fn done(&self) -> bool {
         self.pos >= self.text.len()
     }
 

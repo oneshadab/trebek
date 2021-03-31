@@ -1,4 +1,7 @@
-use std::{collections::{HashSet, VecDeque}, env};
+use std::{
+    collections::{HashSet, VecDeque},
+    env,
+};
 
 use super::object_heap::{ObjectHeap, ObjectId};
 
@@ -55,7 +58,7 @@ impl GarbageCollector {
 
         if let Ok(_) = env::var("DEBUG") {
             for id in unreachbale_ids.clone() {
-               let obj = heap.get(id).unwrap();
+                let obj = heap.get(id).unwrap();
                 eprintln!("[GC DBG]: {:?} {:?}", id, obj);
             }
         }

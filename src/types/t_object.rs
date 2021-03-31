@@ -1,6 +1,9 @@
 use crate::memory::object_heap::ObjectId;
 
-use super::{builtin::Builtin, closure::Closure, list::List, scope::Scope, string_literal::TString, symbol::{Symbol}};
+use super::{
+    builtin::Builtin, closure::Closure, list::List, scope::Scope, string_literal::TString,
+    symbol::Symbol,
+};
 
 #[derive(Debug, Clone)]
 pub enum TObject {

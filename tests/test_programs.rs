@@ -38,7 +38,7 @@ pub mod tests {
         runner.runtime.writer =
             io::BufWriter::new(OutputStream::File(output_file.reopen().unwrap()));
 
-        runner.eval(program);
+        runner.eval(program).unwrap();
 
         runner.runtime.writer.flush().unwrap();
 
