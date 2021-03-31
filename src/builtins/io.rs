@@ -1,10 +1,10 @@
-use crate::try_or_bubble;
+use crate::to_runtime_result;
 use crate::{
     misc::RuntimeResult,
     runtime::Runtime,
     types::{builtin::Builtin, t_object::TObject},
 };
-use std::io::{BufRead, Write};
+use std::{convert::TryInto, io::{BufRead, Write}};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![Builtin::new("scan", scan), Builtin::new("print", print)]
@@ -15,7 +15,7 @@ fn scan(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         [] => {
             let mut word = String::new();
 
-            try_or_bubble!(ctx.reader.read_line(&mut word));
+            to_runtime_result!(ctx.reader.read_line(&mut word))?;
 
             word.pop(); // Remove trailing newline
 
@@ -26,14 +26,15 @@ fn scan(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 }
 
 fn print(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
-    match &args[..] {
-        [symbol] => {
-            let val = ctx.eval(symbol)?;
+    let output = args
+        .iter()
+        .map(|arg| ctx.eval(arg))
+        .collect::<RuntimeResult<Vec<TObject>>>()?
+        .iter()
+        .map(|obj| format!("{}", &obj))
+        .collect::<Vec<String>>()
+        .join("");
 
-            try_or_bubble!(writeln!(&mut ctx.writer, "{}", val));
-
-            Ok(TObject::Empty)
-        }
-        _ => Err(format!("'print' called with incorrect number of args")),
-    }
+    to_runtime_result!(writeln!(&mut ctx.writer, "{}", output))?;
+    Ok(TObject::Empty)
 }

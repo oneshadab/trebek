@@ -1,10 +1,11 @@
 pub type RuntimeResult<T> = Result<T, String>;
 
 #[macro_export]
-macro_rules! try_or_bubble {
+macro_rules! to_runtime_result {
     ($expression: expr) => {
-        if let Err(e) = $expression {
-            return Err(e.to_string());
+        match $expression {
+            Ok(x) => {Ok(x)}
+            Err(e) => {Err(e.to_string())}
         }
     };
 }
