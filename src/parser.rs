@@ -38,23 +38,20 @@ impl Parser {
         let ch = self.peek()?;
 
         let obj = match ch {
-            '(' => {
-                TObject::List(self.next_list()?)
-            }
+            '(' => TObject::List(self.next_list()?),
             '[' => {
                 let list_identifier = TObject::Symbol("list".into());
                 let elements = self.next_list()?;
 
-                let list_literal = vec![list_identifier].into_iter().chain(elements.into_iter()).collect();
+                let list_literal = vec![list_identifier]
+                    .into_iter()
+                    .chain(elements.into_iter())
+                    .collect();
 
                 TObject::List(list_literal)
             }
-            '"' => {
-                TObject::String(self.next_string()?)
-            }
-            _ => {
-                TObject::Symbol(self.next_symbol()?)
-            }
+            '"' => TObject::String(self.next_string()?),
+            _ => TObject::Symbol(self.next_symbol()?),
         };
 
         Ok(obj)
@@ -149,5 +146,4 @@ impl Parser {
     fn done(&self) -> bool {
         self.pos >= self.text.len()
     }
-
 }

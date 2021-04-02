@@ -4,7 +4,7 @@ use crate::{
     runtime::Runtime,
     types::{builtin::Builtin, t_object::TObject},
 };
-use std::{convert::TryInto, io::{BufRead, Write}};
+use std::io::{BufRead, Write};
 
 pub fn get_builtins() -> Vec<Builtin> {
     vec![Builtin::new("scan", scan), Builtin::new("print", print)]

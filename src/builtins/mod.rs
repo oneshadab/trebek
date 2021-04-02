@@ -4,10 +4,10 @@ mod conditional;
 mod function;
 mod internal_utils;
 mod io;
+mod list;
 mod math;
 mod scope;
 mod string;
-mod list;
 
 pub fn get_builtins() -> Vec<Builtin> {
     [
