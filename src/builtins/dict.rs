@@ -1,9 +1,7 @@
-use std::{collections::HashMap, convert::TryInto};
-
 use crate::{
     misc::RuntimeResult,
     runtime::Runtime,
-    types::{builtin::Builtin, list::List, t_object::TObject},
+    types::{builtin::Builtin, t_object::TObject},
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
