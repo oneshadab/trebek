@@ -1,6 +1,7 @@
 use super::types::builtin::Builtin;
 
 mod conditional;
+mod dict;
 mod function;
 mod io;
 mod list;
@@ -17,6 +18,7 @@ pub fn get_builtins() -> Vec<Builtin> {
         scope::get_builtins(),
         string::get_builtins(),
         list::get_builtins(),
+        dict::get_builtins(),
     ]
     .concat()
 }
