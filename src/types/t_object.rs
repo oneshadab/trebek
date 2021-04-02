@@ -35,7 +35,7 @@ impl std::fmt::Display for TObject {
                     .collect::<Vec<String>>()
                     .join(" ");
 
-                write!(f, "({})", out)
+                write!(f, "[{}]", out)
             }
             TObject::Scope(_) => {
                 write!(f, "[Scope]")

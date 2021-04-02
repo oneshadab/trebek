@@ -41,6 +41,14 @@ impl Parser {
             '(' => {
                 TObject::List(self.next_list()?)
             }
+            '[' => {
+                let list_identifier = TObject::Symbol("list".into());
+                let elements = self.next_list()?;
+
+                let list_literal = vec![list_identifier].into_iter().chain(elements.into_iter()).collect();
+
+                TObject::List(list_literal)
+            }
             '"' => {
                 TObject::String(self.next_string()?)
             }
@@ -64,7 +72,7 @@ impl Parser {
             }
 
             let ch = self.peek()?;
-            if ch == ')' {
+            if ch == ')' || ch == ']' {
                 self.next_char()?;
                 break;
             }
@@ -101,7 +109,7 @@ impl Parser {
         while !self.done() {
             let ch = self.peek()?;
 
-            if ch.is_whitespace() || ch == '(' || ch == ')'  {
+            if ch.is_whitespace() || ['(', ')', '[', ']'].contains(&ch) {
                 break;
             }
 
