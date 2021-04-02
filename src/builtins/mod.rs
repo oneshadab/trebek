@@ -2,7 +2,6 @@ use super::types::builtin::Builtin;
 
 mod conditional;
 mod function;
-mod internal_utils;
 mod io;
 mod list;
 mod math;
