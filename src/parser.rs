@@ -18,15 +18,23 @@ impl Parser {
         }
     }
 
-    pub fn parse(&mut self, expr: &String) -> RuntimeResult<TObject> {
-        self.text = expr.chars().collect();
+    pub fn parse(&mut self, program: &String) -> RuntimeResult<Vec<TObject>> {
+        self.text = program.chars().collect();
         self.pos = 0;
-        self.next()
+
+        let mut exprs = Vec::new();
+        loop {
+            self.skip_whitespace()?;
+            if self.done() {
+                break;
+            }
+
+            exprs.push(self.next()?);
+        }
+        Ok(exprs)
     }
 
     fn next(&mut self) -> RuntimeResult<TObject> {
-        self.skip_whitespace()?;
-
         let ch = self.peek()?;
 
         let obj = match ch {
@@ -49,9 +57,11 @@ impl Parser {
 
         self.next_char()?;
 
-
-        while !self.done() {
+        loop {
             self.skip_whitespace()?;
+            if self.done() {
+                break;
+            }
 
             let ch = self.peek()?;
             if ch == ')' {
@@ -132,41 +142,4 @@ impl Parser {
         self.pos >= self.text.len()
     }
 
-    pub fn tokenize(&mut self, text: &String) -> Vec<String> {
-        let mut tokens: Vec<String> = Vec::new();
-
-        let mut buffer: Vec<char> = Vec::new();
-        let mut depth = 0;
-
-        for ch in text.chars() {
-            if depth == 0 && self.is_white_space(ch) {
-                if !buffer.is_empty() {
-                    tokens.push(buffer.iter().collect());
-                    buffer.clear();
-                }
-            } else {
-                if ch == '(' {
-                    depth += 1;
-                }
-
-                if ch == ')' {
-                    depth -= 1;
-                }
-
-                buffer.push(ch);
-            }
-        }
-
-        if !buffer.is_empty() {
-            tokens.push(buffer.iter().collect());
-            buffer.clear();
-        }
-
-        return tokens;
-    }
-
-    fn is_white_space(&self, ch: char) -> bool {
-        let whitespace_chars = [' ', '\t', '\n'];
-        return whitespace_chars.contains(&ch);
-    }
 }

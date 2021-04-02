@@ -65,13 +65,11 @@ impl Repl {
     }
 
     pub fn eval(&mut self, program: String) -> RuntimeResult<String> {
-        let exprs = self.parser.tokenize(&program);
+        let exprs = self.parser.parse(&program)?;
 
         let mut out = TObject::Empty;
-
         for expr in exprs {
-            let obj = self.parser.parse(&expr)?;
-            out = self.runtime.eval(&obj)?;
+            out = self.runtime.eval(&expr)?;
         }
 
         Ok(format!("{}", out))
