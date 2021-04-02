@@ -29,9 +29,13 @@ impl std::fmt::Display for TObject {
                 write!(f, "{}", sym)
             }
             TObject::List(list) => {
-                write!(f, "(")?;
-                list.iter().try_for_each(|obj| write!(f, "{}", obj))?;
-                write!(f, ")")
+                let out = list
+                    .iter()
+                    .map(|obj| obj.to_string())
+                    .collect::<Vec<String>>()
+                    .join(" ");
+
+                write!(f, "({})", out)
             }
             TObject::Scope(_) => {
                 write!(f, "[Scope]")
