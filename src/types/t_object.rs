@@ -1,8 +1,8 @@
 use crate::memory::object_heap::ObjectId;
 
 use super::{
-    builtin::Builtin, closure::Closure, list::List, scope::Scope, string_literal::TString,
-    symbol::Symbol,
+    builtin::Builtin, closure::Closure, dict::Dict, list::List, scope::Scope,
+    string_literal::TString, symbol::Symbol,
 };
 
 #[derive(Debug, Clone)]
@@ -12,6 +12,7 @@ pub enum TObject {
     Symbol(Symbol),
     String(TString),
     List(List),
+    Dict(Dict),
     Scope(Scope),
     Empty,
 }
@@ -28,6 +29,15 @@ impl std::fmt::Display for TObject {
             TObject::Symbol(sym) => {
                 write!(f, "{}", sym)
             }
+            TObject::Scope(_) => {
+                write!(f, "[Scope]")
+            }
+            TObject::Empty => {
+                write!(f, "")
+            }
+            TObject::String(s) => {
+                write!(f, "{}", s)
+            }
             TObject::List(list) => {
                 let out = list
                     .iter()
@@ -37,14 +47,15 @@ impl std::fmt::Display for TObject {
 
                 write!(f, "[{}]", out)
             }
-            TObject::Scope(_) => {
-                write!(f, "[Scope]")
-            }
-            TObject::Empty => {
-                write!(f, "")
-            }
-            TObject::String(s) => {
-                write!(f, "{}", s)
+
+            TObject::Dict(dict) => {
+                let out = dict
+                    .iter()
+                    .map(|(k, v)| format!("{} {}", k, v))
+                    .collect::<Vec<String>>()
+                    .join(" ");
+
+                write!(f, "{{{}}}", out)
             }
         }
     }

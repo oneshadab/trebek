@@ -1,6 +1,7 @@
 pub mod builtin;
 pub mod callable;
 pub mod closure;
+pub mod dict;
 pub mod list;
 pub mod scope;
 pub mod string_literal;
