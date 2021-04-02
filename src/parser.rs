@@ -25,35 +25,40 @@ impl Parser {
         self.next_list()
     }
 
+    fn next(&mut self) -> RuntimeResult<TObject> {
+        let ch = self.peek()?;
+
+        let obj = match ch {
+            '(' => {
+                TObject::List(self.next_list()?)
+            }
+            '"' => {
+                TObject::String(self.next_string()?)
+            }
+            _ => {
+                TObject::Symbol(self.next_symbol()?)
+            }
+        };
+
+        Ok(obj)
+    }
+
     fn next_list(&mut self) -> RuntimeResult<List> {
         let mut tokens: List = List::new();
 
         self.next_char()?;
 
-        while !self.done() {
-            let ch = self.peek()?;
 
-            match ch {
-                '(' => {
-                    let inner_list = self.next_list()?;
-                    tokens.push(TObject::List(inner_list));
-                }
-                ')' => {
-                    self.next_char()?;
-                    break;
-                }
-                '"' => {
-                    let inner_string = self.next_string()?;
-                    tokens.push(TObject::String(inner_string));
-                }
-                ch if ch.is_whitespace() => {
-                    self.next_char()?;
-                }
-                _ => {
-                    let sym = self.next_symbol()?;
-                    tokens.push(TObject::Symbol(sym));
-                }
+        while !self.done() {
+            self.skip_whitespace()?;
+
+            let ch = self.peek()?;
+            if ch == ')' {
+                self.next_char()?;
+                break;
             }
+
+            tokens.push(self.next()?);
         }
 
         Ok(tokens)
@@ -72,9 +77,7 @@ impl Parser {
                 break;
             }
 
-            chars.push(ch);
-
-            self.next_char()?;
+            chars.push(self.next_char()?);
         }
 
         let s = chars.iter().collect();
@@ -87,13 +90,11 @@ impl Parser {
         while !self.done() {
             let ch = self.peek()?;
 
-            if ch.is_whitespace() || ch == '(' || ch == ')' {
+            if ch.is_whitespace() || ch == '(' || ch == ')'  {
                 break;
             }
 
-            chars.push(ch);
-
-            self.next_char()?;
+            chars.push(self.next_char()?);
         }
 
         let sym = chars.iter().collect();
@@ -104,6 +105,19 @@ impl Parser {
         let ch = self.peek()?;
         self.pos += 1;
         Ok(ch)
+    }
+
+    fn skip_whitespace(&mut self) -> RuntimeResult<()> {
+        while !self.done() {
+            let ch = self.peek()?;
+
+            if !ch.is_whitespace() {
+                break;
+            }
+
+            self.next_char()?;
+        }
+        Ok(())
     }
 
     fn peek(&self) -> RuntimeResult<char> {
