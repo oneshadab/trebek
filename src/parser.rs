@@ -18,14 +18,15 @@ impl Parser {
         }
     }
 
-    pub fn parse(&mut self, expr: &String) -> RuntimeResult<List> {
-        let trimmed_expr = self.trim_expression(expr)?;
-        self.text = trimmed_expr.chars().collect();
+    pub fn parse(&mut self, expr: &String) -> RuntimeResult<TObject> {
+        self.text = expr.chars().collect();
         self.pos = 0;
-        self.next_list()
+        self.next()
     }
 
     fn next(&mut self) -> RuntimeResult<TObject> {
+        self.skip_whitespace()?;
+
         let ch = self.peek()?;
 
         let obj = match ch {
@@ -167,22 +168,5 @@ impl Parser {
     fn is_white_space(&self, ch: char) -> bool {
         let whitespace_chars = [' ', '\t', '\n'];
         return whitespace_chars.contains(&ch);
-    }
-
-    fn trim_expression(&self, expr: &String) -> RuntimeResult<String> {
-        let char_buffer: Vec<_> = expr.chars().collect();
-
-        let mut new_start = 0;
-        while self.is_white_space(char_buffer[new_start]) {
-            new_start += 1;
-        }
-
-        let mut new_end = char_buffer.len() - 1;
-        while self.is_white_space(char_buffer[new_end]) {
-            new_end -= 1;
-        }
-
-        let trimmed_buffer = &char_buffer[new_start..new_end];
-        Ok(trimmed_buffer.iter().collect())
     }
 }

@@ -70,8 +70,8 @@ impl Repl {
         let mut out = TObject::Empty;
 
         for expr in exprs {
-            let list = self.parser.parse(&expr)?;
-            out = self.runtime.eval(&TObject::List(list))?;
+            let obj = self.parser.parse(&expr)?;
+            out = self.runtime.eval(&obj)?;
         }
 
         Ok(format!("{}", out))
