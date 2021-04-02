@@ -41,14 +41,23 @@ impl Parser {
             '(' => TObject::List(self.next_list()?),
             '[' => {
                 let list_identifier = TObject::Symbol("list".into());
-                let elements = self.next_list()?;
 
-                let list_literal = vec![list_identifier]
-                    .into_iter()
-                    .chain(elements.into_iter())
-                    .collect();
+                let mut list_literal: List = vec![list_identifier];
+
+                let mut elements = self.next_list()?;
+                list_literal.append(&mut elements);
 
                 TObject::List(list_literal)
+            }
+            '{' => {
+                let dict_identifider = TObject::Symbol("dict".into());
+
+                let mut dict_literal: List = vec![dict_identifider];
+
+                let elements = self.next_list()?;
+                dict_literal.extend(elements);
+
+                TObject::List(dict_literal)
             }
             '"' => TObject::String(self.next_string()?),
             _ => TObject::Symbol(self.next_symbol()?),
@@ -69,7 +78,7 @@ impl Parser {
             }
 
             let ch = self.peek()?;
-            if ch == ')' || ch == ']' {
+            if [')', ']', '}'].contains(&ch) {
                 self.next_char()?;
                 break;
             }
@@ -106,7 +115,7 @@ impl Parser {
         while !self.done() {
             let ch = self.peek()?;
 
-            if ch.is_whitespace() || ['(', ')', '[', ']'].contains(&ch) {
+            if ch.is_whitespace() || ['(', ')', '[', ']', '{', '}'].contains(&ch) {
                 break;
             }
 
