@@ -5,7 +5,10 @@ use crate::{
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
-    vec![Builtin::new("list", make_list)]
+    vec![
+        Builtin::new("list", make_list),
+        Builtin::new("cons", cons),
+    ]
 }
 
 fn make_list(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
@@ -15,4 +18,27 @@ fn make_list(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         .collect::<RuntimeResult<List>>()?;
 
     Ok(TObject::List(evaled_args))
+}
+
+fn cons(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [head, tail] => {
+            let elements = match ctx.eval(tail)? {
+                TObject::List(list) => Ok(list),
+                _ => Err(format!("`cons` called with incorrect of args"))
+            }?;
+
+            let mut new_list = List::new();
+
+            new_list.push_front(ctx.eval(head)?);
+
+            for elem in elements.iter() {
+                new_list.push_back(ctx.eval(elem)?)
+            }
+            Ok(TObject::List(new_list))
+        },
+        _ =>{
+            Err(format!("`cons` called with incorrect of args"))
+        }
+    }
 }
