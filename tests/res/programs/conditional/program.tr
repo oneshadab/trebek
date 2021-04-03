@@ -1,4 +1,4 @@
 (def x 5)
 (if (= x 5)
-  (print equal)
-  (print not_equal))
+  (print "equal")
+  (print "not_equal"))

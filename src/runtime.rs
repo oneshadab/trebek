@@ -118,8 +118,17 @@ impl Runtime {
     }
 
     fn eval_symbol(&mut self, symbol: &String) -> RuntimeResult<TObject> {
-        let default = TObject::Symbol(symbol.clone().into());
-        Ok(self.lookup(symbol).unwrap_or(&default).clone())
+        // Lookup in scope first
+        if let Some(v) = self.lookup(symbol) {
+            return Ok(v.clone());
+        }
+
+        // Allow numbers to remain as symbols
+        if symbol.parse::<i64>().is_ok() {
+            return Ok(TObject::Symbol(symbol.clone()));
+        }
+
+        Err(format!("Symbol `{}` does not exist in scope", symbol))
     }
 
     pub fn new_child_scope(&mut self) {
