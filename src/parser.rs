@@ -52,11 +52,23 @@ impl Parser {
 
                 TObject::List(dict)
             }
-            '\'' => {
+            '\''=> {
                 self.next_char()?;
 
-                let mut list = self.next_list()?;
+                let mut list = List::new();
+
                 list.push_front(TObject::Symbol("quote".into()));
+                list.push_back(self.next()?);
+
+                TObject::List(list)
+            }
+            ':'=> {
+                let sym = self.next_symbol()?;
+
+                let mut list = List::new();
+
+                list.push_front(TObject::Symbol("quote".into()));
+                list.push_back(TObject::Symbol(sym));
 
                 TObject::List(list)
             }

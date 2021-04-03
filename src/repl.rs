@@ -43,7 +43,7 @@ impl Repl {
         loop {
             stdout().flush().ok().expect("Could not flush stdout");
 
-            let prompt = if lines.len() == 0 { ">>> " } else { "..." };
+            let prompt = if lines.len() == 0 { ">>> " } else { "... " };
 
             let line = match rl.readline(prompt) {
                 Ok(line) => line,
