@@ -1,5 +1,6 @@
 use super::types::builtin::Builtin;
 
+mod base;
 mod conditional;
 mod dict;
 mod function;
@@ -11,14 +12,15 @@ mod string;
 
 pub fn get_builtins() -> Vec<Builtin> {
     [
-        math::get_builtins(),
-        io::get_builtins(),
-        function::get_builtins(),
+        base::get_builtins(),
         conditional::get_builtins(),
+        dict::get_builtins(),
+        function::get_builtins(),
+        io::get_builtins(),
+        list::get_builtins(),
+        math::get_builtins(),
         scope::get_builtins(),
         string::get_builtins(),
-        list::get_builtins(),
-        dict::get_builtins(),
     ]
     .concat()
 }
