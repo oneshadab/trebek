@@ -8,6 +8,8 @@ pub fn get_builtins() -> Vec<Builtin> {
     vec![
         Builtin::new("list", make_list),
         Builtin::new("cons", cons),
+        Builtin::new("car", car),
+        Builtin::new("cdr", cdr),
     ]
 }
 
@@ -38,7 +40,37 @@ fn cons(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
             Ok(TObject::List(new_list))
         },
         _ =>{
-            Err(format!("`cons` called with incorrect of args"))
+            Err(format!("`cons` called with incorrect args"))
         }
+    }
+}
+
+fn car(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [list] => {
+            match ctx.eval(list)? {
+                TObject::List(list) => {
+                    let head = list.get(0).ok_or(format!("Cannot get `car` of empty list"))?;
+                    Ok(head.clone())
+                }
+                _ => Err(format!("`car` called with incorrect args")),
+            }
+        },
+        _ =>{
+            Err(format!("`car` called with incorrect args"))
+        }
+    }
+}
+
+fn cdr(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [list] => match ctx.eval(list)? {
+            TObject::List(list) => {
+                let tail = list.iter().skip(1).map(TObject::clone).collect();
+                Ok(TObject::List(tail))
+            }
+            _ => Err(format!("`car` called with incorrect args")),
+        }
+        _ => Err(format!("`car` called with incorrect args"))
     }
 }
