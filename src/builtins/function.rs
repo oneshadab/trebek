@@ -18,7 +18,7 @@ fn create_function(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObje
             let func = init_function(ctx, params_expr, body_expr)?;
             Ok(TObject::Closure(func))
         }
-        _ => Err(format!("'print' called with incorrect number of args")),
+        _ => Err(format!("'fn' called with incorrect number of args")),
     }
 }
 

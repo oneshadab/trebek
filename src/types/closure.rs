@@ -7,7 +7,7 @@ pub struct Closure {
     pub lexical_scope_id: usize,
 
     params: Vec<Symbol>,
-    body: List,
+    body: List, // Todo: Change from List -> TObject
 }
 
 impl Closure {
