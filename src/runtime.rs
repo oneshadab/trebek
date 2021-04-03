@@ -105,8 +105,12 @@ impl Runtime {
     }
 
     fn eval_expression(&mut self, list: &List) -> RuntimeResult<TObject> {
-        let func_obj = &list[0];
-        let arg_objs = &list[1..];
+        let func_obj = list.get(0).ok_or("Cannot eval empty expressions")?;
+
+        let mut arg_objs = Vec::new();
+        for obj in list.iter().skip(1) {
+            arg_objs.push(obj.clone());
+        }
 
         let callable: Box<dyn Callable> = match self.eval(func_obj)? {
             TObject::Builtin(builtin) => Box::new(builtin),
@@ -114,7 +118,7 @@ impl Runtime {
             other => Err(format!("{:?} is not callable", other))?,
         };
 
-        callable.call(self, arg_objs.into())
+        callable.call(self, arg_objs)
     }
 
     fn eval_symbol(&mut self, symbol: &String) -> RuntimeResult<TObject> {

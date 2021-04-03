@@ -40,34 +40,25 @@ impl Parser {
         let obj = match ch {
             '(' => TObject::List(self.next_list()?),
             '[' => {
-                let list_identifier = TObject::Symbol("list".into());
+                let mut list = self.next_list()?;
 
-                let mut list_literal: List = vec![list_identifier];
+                list.push_front(TObject::Symbol("list".into()));
 
-                let mut elements = self.next_list()?;
-                list_literal.append(&mut elements);
-
-                TObject::List(list_literal)
+                TObject::List(list)
             }
             '{' => {
-                let dict_identifider = TObject::Symbol("dict".into());
+                let mut dict = self.next_list()?;
+                dict.push_front(TObject::Symbol("dict".into()));
 
-                let mut dict_literal: List = vec![dict_identifider];
-
-                let elements = self.next_list()?;
-                dict_literal.extend(elements);
-
-                TObject::List(dict_literal)
+                TObject::List(dict)
             }
             '\'' => {
-                let quote_identifier = TObject::Symbol("quote".into());
-
                 self.next_char()?;
 
-                let element = self.next()?;
-                let quote_literal = vec![quote_identifier, element];
+                let mut list = self.next_list()?;
+                list.push_front(TObject::Symbol("quote".into()));
 
-                TObject::List(quote_literal)
+                TObject::List(list)
             }
             '"' => TObject::String(self.next_string()?),
             _ => TObject::Symbol(self.next_symbol()?),
@@ -93,7 +84,7 @@ impl Parser {
                 break;
             }
 
-            tokens.push(self.next()?);
+            tokens.push_back(self.next()?);
         }
 
         Ok(tokens)
