@@ -1,7 +1,9 @@
-use crate::to_runtime_result;
-use std::{io::{stdin, stdout, Write}, process};
+use std::{
+    io::{stdout, Write},
+    process,
+};
 
-use rustyline::{Editor, error::ReadlineError};
+use rustyline::{error::ReadlineError, Editor};
 
 use crate::misc::RuntimeResult;
 
@@ -47,13 +49,13 @@ impl Repl {
                 Ok(line) => line,
                 Err(ReadlineError::Interrupted) => {
                     process::exit(0);
-                },
+                }
                 Err(ReadlineError::Eof) => {
                     process::exit(0);
-                },
+                }
                 Err(err) => {
                     println!("Error: {:?}", err);
-                    break
+                    break;
                 }
             };
 
