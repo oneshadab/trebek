@@ -59,6 +59,16 @@ impl Parser {
 
                 TObject::List(dict_literal)
             }
+            '\'' => {
+                let quote_identifier = TObject::Symbol("quote".into());
+
+                self.next_char()?;
+
+                let element = self.next()?;
+                let quote_literal = vec![quote_identifier, element];
+
+                TObject::List(quote_literal)
+            }
             '"' => TObject::String(self.next_string()?),
             _ => TObject::Symbol(self.next_symbol()?),
         };
