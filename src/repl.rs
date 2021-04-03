@@ -1,4 +1,7 @@
-use std::io::{stdin, stdout, Write};
+use crate::to_runtime_result;
+use std::{io::{stdin, stdout, Write}, process};
+
+use rustyline::{Editor, error::ReadlineError};
 
 use crate::misc::RuntimeResult;
 
@@ -18,7 +21,7 @@ impl Repl {
     }
 
     pub fn prompt(&mut self) {
-        let program = self.read_expr().unwrap();
+        let program = self.read().unwrap();
         let output = match self.eval(program) {
             Ok(out) => out,
             Err(e) => {
@@ -28,22 +31,33 @@ impl Repl {
         println!("{}", output);
     }
 
-    pub fn read_expr(&self) -> Result<String, String> {
+    pub fn read(&self) -> Result<String, String> {
         let mut lines: Vec<String> = vec![];
 
         let mut depth = 0;
 
-        print!(">>> ");
+        let mut rl = Editor::<()>::new();
 
         loop {
             stdout().flush().ok().expect("Could not flush stdout");
 
-            let mut buffer = String::new();
-            if let Err(e) = stdin().read_line(&mut buffer) {
-                return Err(e.to_string());
-            }
+            let prompt = if lines.len() == 0 { ">>> " } else { "..." };
 
-            for ch in buffer.chars() {
+            let line = match rl.readline(prompt) {
+                Ok(line) => line,
+                Err(ReadlineError::Interrupted) => {
+                    process::exit(0);
+                },
+                Err(ReadlineError::Eof) => {
+                    process::exit(0);
+                },
+                Err(err) => {
+                    println!("Error: {:?}", err);
+                    break
+                }
+            };
+
+            for ch in line.chars() {
                 if ch == '(' {
                     depth += 1;
                 }
@@ -52,16 +66,15 @@ impl Repl {
                 }
             }
 
-            lines.push(buffer);
+            rl.add_history_entry(line.as_str());
+            lines.push(line);
 
             if depth == 0 {
                 break;
             }
-
-            print!("... ")
         }
 
-        Ok(lines.join(""))
+        Ok(lines.join("\n"))
     }
 
     pub fn eval(&mut self, program: String) -> RuntimeResult<String> {
