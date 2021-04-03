@@ -45,7 +45,7 @@ impl std::fmt::Display for TObject {
                     .collect::<Vec<String>>()
                     .join(" ");
 
-                write!(f, "[{}]", out)
+                write!(f, "({})", out)
             }
 
             TObject::Dict(dict) => {
