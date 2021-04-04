@@ -9,6 +9,7 @@ mod list;
 mod math;
 mod scope;
 mod string;
+mod macros;
 
 pub fn get_builtins() -> Vec<Builtin> {
     [
@@ -21,6 +22,7 @@ pub fn get_builtins() -> Vec<Builtin> {
         math::get_builtins(),
         scope::get_builtins(),
         string::get_builtins(),
+        macros::get_builtins(),
     ]
     .concat()
 }
