@@ -5,7 +5,7 @@ use crate::{
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
-    vec![Builtin::new("quote", quote)]
+    vec![Builtin::new("quote", quote), Builtin::new("eval", eval)]
 }
 
 fn quote(_ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
@@ -14,4 +14,14 @@ fn quote(_ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     }
 
     Ok(args[0].clone())
+}
+
+fn eval(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [obj] => {
+            let expanded_obj = ctx.eval(obj)?;
+            ctx.eval(&expanded_obj)
+        },
+        _ => Err(format!("'eval' called with incorrect args"))
+    }
 }
