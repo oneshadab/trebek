@@ -7,3 +7,4 @@ pub mod scope;
 pub mod string_literal;
 pub mod symbol;
 pub mod t_object;
+pub mod macros;
