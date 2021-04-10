@@ -85,6 +85,7 @@ impl Repl {
         let mut out = TObject::Empty;
         for expr in exprs {
             out = self.runtime.eval(&expr)?;
+            self.runtime.writer.flush().ok().ok_or("Failed to flush to stdout")?;
         }
 
         Ok(format!("{}", out))
