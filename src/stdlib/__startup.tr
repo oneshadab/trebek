@@ -1,0 +1,2 @@
+(defn help ()
+  (print "Help for trebek"))
