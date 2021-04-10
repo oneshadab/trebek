@@ -122,8 +122,7 @@ impl Runtime {
             TObject::List(expr) => self.eval_expression(expr)?,
             TObject::Symbol(symbol) => self.eval_symbol(symbol)?,
             TObject::String(s) => TObject::String(s.clone()),
-            TObject::Empty => TObject::Empty,
-            other => Err(format!("`{}` evaluation is not supported", other))?,
+            other => other.clone(),
         };
 
         if let Ok(_) = env::var("DEBUG") {
