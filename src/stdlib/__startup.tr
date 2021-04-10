@@ -1,2 +1,11 @@
 (defn help ()
   (print "Help for trebek"))
+
+(def nil (list))
+
+(defmacro while (cond body)
+  (list 'if cond
+    (list 'do
+      body
+      (list while cond body))
+    'nil))
