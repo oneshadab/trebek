@@ -4,6 +4,7 @@ use crate::{
     runtime::Runtime,
     types::builtin::Builtin,
     types::t_object::TObject,
+    to_i32,
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
@@ -44,16 +45,26 @@ fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
 
             let res = match (&left, &right) {
                 (TObject::Symbol(lhs), TObject::Symbol(rhs)) => {
-                    if lhs < rhs {
-                        TObject::Symbol(TRUE.into())
+                    let i_lhs = to_i32!(lhs);
+                    let i_rhs = to_i32!(rhs);
+
+                    if i_lhs.is_ok() && i_rhs.is_ok() {
+                        if i_lhs? < i_rhs? {
+                            TRUE
+                        }
+                        else {
+                            FALSE
+                        }
+                    } else if lhs < rhs {
+                        TRUE
                     } else {
-                        TObject::Symbol(FALSE.into())
+                        FALSE
                     }
                 }
                 _ => Err(format!("Cannot compare {:?} and {:?}", left, right))?,
             };
 
-            Ok(res)
+            Ok(TObject::Symbol(res.into()))
         }
         _ => Err(format!("'print' called with incorrect number of args")),
     }

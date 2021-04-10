@@ -2,6 +2,7 @@ use crate::{
     misc::RuntimeResult,
     runtime::Runtime,
     types::{builtin::Builtin, t_object::TObject},
+    to_i32,
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
@@ -23,8 +24,8 @@ macro_rules! create_math_function {
 
           match (val, other_val) {
             (TObject::Symbol(a), TObject::Symbol(b)) => {
-              let i_a: i32 = a.parse().unwrap();
-              let i_b: i32 = b.parse().unwrap();
+              let i_a: i32 = to_i32!(a)?;
+              let i_b: i32 = to_i32!(b)?;
               let i_result = i_a $operation i_b;
 
               Ok(TObject::Symbol(i_result.to_string()))
