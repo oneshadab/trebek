@@ -2,6 +2,7 @@ use super::types::builtin::Builtin;
 
 mod base;
 mod conditional;
+mod control_flow;
 mod dict;
 mod function;
 mod io;
@@ -15,6 +16,7 @@ pub fn get_builtins() -> Vec<Builtin> {
     [
         base::get_builtins(),
         conditional::get_builtins(),
+        control_flow::get_builtins(),
         dict::get_builtins(),
         function::get_builtins(),
         io::get_builtins(),
