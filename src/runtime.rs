@@ -1,6 +1,6 @@
-use std::{env, fs::read_to_string, io::{self, BufReader, BufWriter, Write}};
+use std::{env, fs::read_to_string, io::{self, BufReader, BufWriter, Write}, path::{Path, PathBuf}};
 
-use crate::{parser::Parser};
+use crate::{parser::Parser, repl};
 use crate::misc::RuntimeResult;
 
 use super::{
@@ -49,6 +49,7 @@ impl Runtime {
         };
 
         runtime.init_builtins();
+        runtime.init_startup_code();
 
         runtime
     }
@@ -59,12 +60,31 @@ impl Runtime {
         }
     }
 
+    fn init_startup_code(&mut self) {
+        self.import("__startup".into()).expect("Failed to load startup code");
+    }
+
     pub fn import(&mut self, file_path: String) -> RuntimeResult<TObject> {
-        eprintln!("{}", file_path);
-        let program = read_to_string(file_path).ok().ok_or("Could not open file")?;
+        let import_path = self.get_import_path(file_path);
+        let program = read_to_string(import_path).ok().ok_or("Could not open file")?;
         self.run(program)?;
         Ok(TObject::Empty)
     }
+
+    fn get_import_path(&self, file_path: String) -> PathBuf {
+        // Todo: Move to config
+        let mut import_path = PathBuf::from(file_path);
+        import_path.set_extension("tr");
+
+        let stdlib_path = PathBuf::from("src/stdlib");
+        if stdlib_path.join(&import_path).exists() {
+            return stdlib_path.join(&import_path);
+        }
+
+        import_path
+    }
+
+
 
     pub fn run(&mut self, program: String) -> RuntimeResult<String> {
         let exprs = Parser::new().parse(&program)?;
