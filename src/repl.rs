@@ -10,14 +10,12 @@ use crate::misc::RuntimeResult;
 use super::{parser::Parser, runtime::Runtime, types::t_object::TObject};
 
 pub struct Repl {
-    pub parser: Parser,
     pub runtime: Runtime,
 }
 
 impl Repl {
     pub fn new() -> Repl {
         Repl {
-            parser: Parser::new(),
             runtime: Runtime::new(),
         }
     }
@@ -80,14 +78,6 @@ impl Repl {
     }
 
     pub fn eval(&mut self, program: String) -> RuntimeResult<String> {
-        let exprs = self.parser.parse(&program)?;
-
-        let mut out = TObject::Empty;
-        for expr in exprs {
-            out = self.runtime.eval(&expr)?;
-            self.runtime.writer.flush().ok().ok_or("Failed to flush to stdout")?;
-        }
-
-        Ok(format!("{}", out))
+        self.runtime.run(program)
     }
 }

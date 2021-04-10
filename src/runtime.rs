@@ -1,8 +1,6 @@
-use std::{
-    env,
-    io::{self, BufReader, BufWriter},
-};
+use std::{env, fs::read_to_string, io::{self, BufReader, BufWriter, Write}};
 
+use crate::{parser::Parser};
 use crate::misc::RuntimeResult;
 
 use super::{
@@ -59,6 +57,25 @@ impl Runtime {
         for builtin in builtins::get_builtins() {
             self.set_global(builtin.name.into(), TObject::Builtin(builtin));
         }
+    }
+
+    pub fn import(&mut self, file_path: String) -> RuntimeResult<TObject> {
+        eprintln!("{}", file_path);
+        let program = read_to_string(file_path).ok().ok_or("Could not open file")?;
+        self.run(program)?;
+        Ok(TObject::Empty)
+    }
+
+    pub fn run(&mut self, program: String) -> RuntimeResult<String> {
+        let exprs = Parser::new().parse(&program)?;
+
+        let mut out = TObject::Empty;
+        for expr in exprs {
+            out = self.eval(&expr)?;
+            self.writer.flush().ok().ok_or("Failed to flush to stdout")?;
+        }
+
+        Ok(format!("{}", out))
     }
 
     pub fn set_global(&mut self, symbol: String, obj: TObject) {
