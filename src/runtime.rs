@@ -126,7 +126,7 @@ impl Runtime {
         };
 
         if let Ok(_) = env::var("DEBUG") {
-            eprintln!("[DBG] Executing '{:?}' || Output: '{:?}'", obj, output);
+            eprintln!("[DBG] Evaluating '{:?}' || Output: '{:?}'", obj, output);
         }
 
         self.restore_saved_scope();
