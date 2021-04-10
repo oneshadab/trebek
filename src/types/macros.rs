@@ -1,3 +1,5 @@
+use std::env;
+
 use crate::{misc::RuntimeResult, runtime::Runtime};
 
 use super::{callable::Callable, list::List, symbol::Symbol, t_object::TObject};
@@ -30,6 +32,11 @@ impl Callable for Macro {
 
         let expr = TObject::List(self.body.clone());
         let expanded_expr = ctx.eval(&expr)?;
+
+        if env::var("DEBUG").is_ok() {
+            eprintln!("{:?}", expanded_expr);
+        }
+
         ctx.eval(&expanded_expr)
     }
 }
