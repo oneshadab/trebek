@@ -13,7 +13,10 @@ pub struct Repl {
     pub runtime: Runtime,
 }
 
+static history_path: &str = "cmd_history";
+
 impl Repl {
+
     pub fn new() -> Repl {
         Repl {
             runtime: Runtime::new(),
@@ -37,6 +40,10 @@ impl Repl {
         let mut depth = 0;
 
         let mut rl = Editor::<()>::new();
+
+        if rl.save_history(history_path).is_err() {
+            // No previous history
+        }
 
         loop {
             stdout().flush().ok().expect("Could not flush stdout");
@@ -72,6 +79,10 @@ impl Repl {
             if depth == 0 {
                 break;
             }
+        }
+
+        if let Err(e) = rl.save_history(history_path) {
+            eprintln!("Failed to save history: {}", e);
         }
 
         Ok(lines.join("\n"))
