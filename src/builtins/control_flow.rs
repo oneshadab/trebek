@@ -9,6 +9,7 @@ use crate::{
 pub fn get_builtins() -> Vec<Builtin> {
   vec![
       Builtin::new("if", if_cond),
+      Builtin::new("do", execute_seqentially),
   ]
 }
 
@@ -30,4 +31,12 @@ fn if_cond(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
       }
       _ => Err(format!("'print' called with incorrect number of args")),
   }
+}
+
+fn execute_seqentially(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+  let mut out = TObject::Empty;
+  for arg in args.iter() {
+    out = ctx.eval(arg)?;
+  }
+  Ok(out)
 }
