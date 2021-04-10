@@ -1,18 +1,22 @@
-use std::{fs::create_dir_all, io::{stdout, Write}, path::PathBuf, process};
+use std::{
+    fs::create_dir_all,
+    io::{stdout, Write},
+    path::PathBuf,
+    process,
+};
 
 use rustyline::{error::ReadlineError, Editor};
 
-use crate::misc::RuntimeResult;
-
-use super::{parser::Parser, runtime::Runtime, types::t_object::TObject};
+use crate::{
+    misc::RuntimeResult,
+    runtime::Runtime,
+};
 
 pub struct Repl {
     pub runtime: Runtime,
 }
 
-
 impl Repl {
-
     pub fn new() -> Repl {
         Repl {
             runtime: Runtime::new(),
@@ -93,7 +97,9 @@ impl Repl {
         let cache_dir = dirs::cache_dir().ok_or("Cache dir not found")?;
 
         let history_dir = cache_dir.join("trebek");
-        create_dir_all(&history_dir).ok().ok_or("Failed to create dir for history")?;
+        create_dir_all(&history_dir)
+            .ok()
+            .ok_or("Failed to create dir for history")?;
 
         let history_path = history_dir.join("cmd_history");
         Ok(history_path)

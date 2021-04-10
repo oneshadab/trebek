@@ -27,7 +27,7 @@ fn cons(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         [head, tail] => {
             let elements = match ctx.eval(tail)? {
                 TObject::List(list) => Ok(list),
-                _ => Err(format!("`cons` called with incorrect of args"))
+                _ => Err(format!("`cons` called with incorrect of args")),
             }?;
 
             let mut new_list = List::new();
@@ -38,27 +38,23 @@ fn cons(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                 new_list.push_back(ctx.eval(elem)?)
             }
             Ok(TObject::List(new_list))
-        },
-        _ =>{
-            Err(format!("`cons` called with incorrect args"))
         }
+        _ => Err(format!("`cons` called with incorrect args")),
     }
 }
 
 fn car(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
-        [list] => {
-            match ctx.eval(list)? {
-                TObject::List(list) => {
-                    let head = list.get(0).ok_or(format!("Cannot get `car` of empty list"))?;
-                    Ok(head.clone())
-                }
-                _ => Err(format!("`car` called with incorrect args")),
+        [list] => match ctx.eval(list)? {
+            TObject::List(list) => {
+                let head = list
+                    .get(0)
+                    .ok_or(format!("Cannot get `car` of empty list"))?;
+                Ok(head.clone())
             }
+            _ => Err(format!("`car` called with incorrect args")),
         },
-        _ =>{
-            Err(format!("`car` called with incorrect args"))
-        }
+        _ => Err(format!("`car` called with incorrect args")),
     }
 }
 
@@ -70,7 +66,7 @@ fn cdr(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                 Ok(TObject::List(tail))
             }
             _ => Err(format!("`car` called with incorrect args")),
-        }
-        _ => Err(format!("`car` called with incorrect args"))
+        },
+        _ => Err(format!("`car` called with incorrect args")),
     }
 }

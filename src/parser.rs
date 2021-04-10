@@ -52,7 +52,7 @@ impl Parser {
 
                 TObject::List(dict)
             }
-            '\''=> {
+            '\'' => {
                 self.next_char()?;
 
                 let mut list = List::new();
@@ -62,7 +62,7 @@ impl Parser {
 
                 TObject::List(list)
             }
-            ':'=> {
+            ':' => {
                 let sym = self.next_symbol()?;
 
                 let mut list = List::new();

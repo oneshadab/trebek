@@ -2,16 +2,13 @@ use crate::{
     constants::{FALSE, TRUE},
     misc::RuntimeResult,
     runtime::Runtime,
+    to_i32,
     types::builtin::Builtin,
     types::t_object::TObject,
-    to_i32,
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
-    vec![
-        Builtin::new("=", is_equal),
-        Builtin::new("<", is_less),
-    ]
+    vec![Builtin::new("=", is_equal), Builtin::new("<", is_less)]
 }
 
 fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
@@ -51,8 +48,7 @@ fn is_less(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                     if i_lhs.is_ok() && i_rhs.is_ok() {
                         if i_lhs? < i_rhs? {
                             TRUE
-                        }
-                        else {
+                        } else {
                             FALSE
                         }
                     } else if lhs < rhs {

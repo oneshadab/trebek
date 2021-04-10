@@ -1,7 +1,12 @@
-use std::{env, fs::read_to_string, io::{self, BufReader, BufWriter, Write}, path::{Path, PathBuf}};
+use std::{
+    env,
+    fs::read_to_string,
+    io::{self, BufReader, BufWriter, Write},
+    path::PathBuf,
+};
 
-use crate::{parser::Parser, repl};
 use crate::misc::RuntimeResult;
+use crate::parser::Parser;
 
 use super::{
     builtins,
@@ -61,12 +66,15 @@ impl Runtime {
     }
 
     fn init_startup_code(&mut self) {
-        self.import("__startup".into()).expect("Failed to load startup code");
+        self.import("__startup".into())
+            .expect("Failed to load startup code");
     }
 
     pub fn import(&mut self, file_path: String) -> RuntimeResult<TObject> {
         let import_path = self.get_import_path(file_path);
-        let program = read_to_string(import_path).ok().ok_or("Could not open file")?;
+        let program = read_to_string(import_path)
+            .ok()
+            .ok_or("Could not open file")?;
         self.run(program)?;
         Ok(TObject::Empty)
     }
@@ -84,15 +92,16 @@ impl Runtime {
         import_path
     }
 
-
-
     pub fn run(&mut self, program: String) -> RuntimeResult<String> {
         let exprs = Parser::new().parse(&program)?;
 
         let mut out = TObject::Empty;
         for expr in exprs {
             out = self.eval(&expr)?;
-            self.writer.flush().ok().ok_or("Failed to flush to stdout")?;
+            self.writer
+                .flush()
+                .ok()
+                .ok_or("Failed to flush to stdout")?;
         }
 
         Ok(format!("{}", out))

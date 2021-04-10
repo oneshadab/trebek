@@ -7,10 +7,10 @@ mod dict;
 mod function;
 mod io;
 mod list;
+mod macros;
 mod math;
 mod scope;
 mod string;
-mod macros;
 
 pub fn get_builtins() -> Vec<Builtin> {
     [

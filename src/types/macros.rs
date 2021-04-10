@@ -12,10 +12,7 @@ pub struct Macro {
 
 impl Macro {
     pub fn new(params: Vec<Symbol>, body: List) -> Macro {
-        Macro {
-            params,
-            body,
-        }
+        Macro { params, body }
     }
 }
 

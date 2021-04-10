@@ -21,7 +21,7 @@ fn eval(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
         [obj] => {
             let expanded_obj = ctx.eval(obj)?;
             ctx.eval(&expanded_obj)
-        },
-        _ => Err(format!("'eval' called with incorrect args"))
+        }
+        _ => Err(format!("'eval' called with incorrect args")),
     }
 }
