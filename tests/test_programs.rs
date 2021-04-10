@@ -17,16 +17,21 @@ pub mod tests {
         repl::Repl,
     };
 
-    #[test_resources("tests/res/programs/*")]
+    #[test_resources("tests/res/programs/**")]
     fn verify(program_dir: &str) {
         let dir = Path::new(program_dir);
 
         let program_path = dir.join("program.tr");
-        let program = read_to_string(program_path).expect("Program not found!");
+
+        let program = read_to_string(program_path);
+        if program.is_err() {
+            return;
+        }
+
+        let program = program.expect("Program not found!");
 
         let expected_output_path = dir.join("expected_output.txt");
-        let expected_output =
-            read_to_string(expected_output_path).expect("Expected output not found!");
+        let expected_output = read_to_string(expected_output_path).unwrap_or("".into());
 
         let input_file_path = dir.join("input.txt");
         let input_file = fs::File::open(input_file_path).unwrap_or(tempfile::tempfile().unwrap());
