@@ -5,7 +5,11 @@ use crate::{
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
-    vec![Builtin::new("def", define), Builtin::new("let", let_new)]
+    vec![
+        Builtin::new("def", define),
+        Builtin::new("let", let_new),
+        Builtin::new("import", import),
+    ]
 }
 
 fn define(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
@@ -45,6 +49,18 @@ fn let_new(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
             }
 
             ctx.eval(body)
+        }
+        _ => Err(format!("'let' called with incorrent args")),
+    }
+}
+
+fn import(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [file_path] => {
+            match ctx.eval(file_path)? {
+                TObject::String(path) => ctx.import(path),
+                other => Err(format!("cannot import `{}`", other)),
+            }
         }
         _ => Err(format!("'let' called with incorrent args")),
     }
