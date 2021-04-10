@@ -1,7 +1,4 @@
-use std::{
-    io::{stdout, Write},
-    process,
-};
+use std::{fs::create_dir_all, io::{stdout, Write}, path::PathBuf, process};
 
 use rustyline::{error::ReadlineError, Editor};
 
@@ -13,7 +10,6 @@ pub struct Repl {
     pub runtime: Runtime,
 }
 
-static history_path: &str = "cmd_history";
 
 impl Repl {
 
@@ -40,8 +36,9 @@ impl Repl {
         let mut depth = 0;
 
         let mut rl = Editor::<()>::new();
+        let history_path = self.get_history_path()?;
 
-        if rl.save_history(history_path).is_err() {
+        if rl.load_history(&history_path).is_err() {
             // No previous history
         }
 
@@ -81,8 +78,8 @@ impl Repl {
             }
         }
 
-        if let Err(e) = rl.save_history(history_path) {
-            eprintln!("Failed to save history: {}", e);
+        if let Err(e) = rl.save_history(&history_path) {
+            eprintln!("Error: Failed to save cmd history: {}", e);
         }
 
         Ok(lines.join("\n"))
@@ -90,5 +87,15 @@ impl Repl {
 
     pub fn eval(&mut self, program: String) -> RuntimeResult<String> {
         self.runtime.run(program)
+    }
+
+    fn get_history_path(&self) -> RuntimeResult<PathBuf> {
+        let cache_dir = dirs::cache_dir().ok_or("Cache dir not found")?;
+
+        let history_dir = cache_dir.join("trebek");
+        create_dir_all(&history_dir).ok().ok_or("Failed to create dir for history")?;
+
+        let history_path = history_dir.join("cmd_history");
+        Ok(history_path)
     }
 }
