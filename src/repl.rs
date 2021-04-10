@@ -7,10 +7,7 @@ use std::{
 
 use rustyline::{error::ReadlineError, Editor};
 
-use crate::{
-    misc::RuntimeResult,
-    runtime::Runtime,
-};
+use crate::{misc::RuntimeResult, runtime::Runtime};
 
 pub struct Repl {
     pub runtime: Runtime,
