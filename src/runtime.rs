@@ -102,6 +102,8 @@ impl Runtime {
     pub fn run(&mut self, program: String) -> RuntimeResult<String> {
         let exprs = Parser::new().parse(&program)?;
 
+        self.new_child_scope();
+
         let mut out = TObject::Empty;
         for expr in exprs {
             out = self.eval(&expr)?;
@@ -131,8 +133,6 @@ impl Runtime {
 
     pub fn eval(&mut self, obj: &TObject) -> RuntimeResult<TObject> {
         self.save_current_scope();
-
-        self.new_child_scope();
 
         let output = match obj {
             TObject::List(expr) => self.eval_expression(expr)?,

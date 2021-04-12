@@ -9,6 +9,8 @@ pub fn get_builtins() -> Vec<Builtin> {
         Builtin::new("def", define),
         Builtin::new("let", let_new),
         Builtin::new("import", import),
+        Builtin::new("set-local", set_local),
+        Builtin::new("set-global", set_global),
     ]
 }
 
@@ -60,6 +62,28 @@ fn import(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
             TObject::String(path) => ctx.import(path),
             other => Err(format!("cannot import `{}`", other)),
         },
-        _ => Err(format!("'let' called with incorrent args")),
+        _ => Err(format!("'import' called with incorrent args")),
+    }
+}
+
+fn set_global(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [TObject::Symbol(sym), obj ] => {
+            let val = ctx.eval(obj)?;
+            ctx.set_global(sym.into(), val.clone());
+            Ok(val)
+        },
+        _ => Err(format!("'set_global' called with incorrent args")),
+    }
+}
+
+fn set_local(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [TObject::Symbol(sym), obj ] => {
+            let val = ctx.eval(obj)?;
+            ctx.set_local(sym.into(), val.clone());
+            Ok(val)
+        },
+        _ => Err(format!("'set_local' called with incorrent args")),
     }
 }
