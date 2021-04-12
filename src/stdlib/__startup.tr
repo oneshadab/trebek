@@ -9,3 +9,6 @@
       body
       (list while cond body))
     'nil))
+
+(defmacro not (cond)
+  (list 'if cond false true))
