@@ -4,7 +4,7 @@ use crate::memory::object_heap::ObjectId;
 
 use super::symbol::Symbol;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Scope {
     pub parent_scope_id: Option<ObjectId>,
     pub obj_map: HashMap<Symbol, ObjectId>,

@@ -5,7 +5,7 @@ use super::{
     string_literal::TString, symbol::Symbol,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TObject {
     Closure(Closure),
     Builtin(Builtin),

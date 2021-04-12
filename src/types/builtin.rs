@@ -11,6 +11,12 @@ pub struct Builtin {
     pub func: Func,
 }
 
+impl PartialEq for Builtin {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+    }
+}
+
 impl Builtin {
     pub fn new(name: &'static str, func: Func) -> Builtin {
         Builtin { name, func }

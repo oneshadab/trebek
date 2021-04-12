@@ -4,7 +4,7 @@ use crate::{misc::RuntimeResult, runtime::Runtime};
 
 use super::{callable::Callable, list::List, symbol::Symbol, t_object::TObject};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Macro {
     params: Vec<Symbol>,
     body: List, // Todo: Change from List -> TObject
@@ -30,7 +30,7 @@ impl Callable for Macro {
         let expr = TObject::List(self.body.clone());
         let expanded_expr = ctx.eval(&expr)?;
 
-        if env::var("DEBUG").is_ok() {
+        if env::var("DEBUG1").is_ok() {
             eprintln!("{:?}", expanded_expr);
         }
 

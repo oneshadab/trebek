@@ -25,6 +25,13 @@ fn is_equal(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
                         TObject::Symbol(FALSE.into())
                     }
                 }
+                (TObject::List(lhs), TObject::List(rhs)) => {
+                    if lhs.iter().eq(rhs.iter()) {
+                        TObject::Symbol(TRUE.into())
+                    } else {
+                        TObject::Symbol(FALSE.into())
+                    }
+                }
                 _ => Err(format!("Cannot compare {:?} and {:?}", left, right))?,
             };
 

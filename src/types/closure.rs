@@ -2,7 +2,7 @@ use crate::{misc::RuntimeResult, runtime::Runtime};
 
 use super::{callable::Callable, list::List, symbol::Symbol, t_object::TObject};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Closure {
     pub lexical_scope_id: usize,
 
