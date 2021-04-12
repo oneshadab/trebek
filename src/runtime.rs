@@ -5,7 +5,7 @@ use std::{
     path::PathBuf,
 };
 
-use crate::misc::RuntimeResult;
+use crate::{constants::get_constants, misc::RuntimeResult};
 use crate::parser::Parser;
 
 use super::{
@@ -54,6 +54,7 @@ impl Runtime {
         };
 
         runtime.init_builtins();
+        runtime.init_constants();
         runtime.init_startup_code();
 
         runtime
@@ -62,6 +63,12 @@ impl Runtime {
     fn init_builtins(&mut self) {
         for builtin in builtins::get_builtins() {
             self.set_global(builtin.name.into(), TObject::Builtin(builtin));
+        }
+    }
+
+    fn init_constants(&mut self) {
+        for (symbol, value) in get_constants().into_iter() {
+            self.set_global(symbol, value);
         }
     }
 
