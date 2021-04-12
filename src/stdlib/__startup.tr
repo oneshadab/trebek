@@ -24,3 +24,12 @@
       (list 'do
         (list 'let (list it (list 'car '__rest)) body)
         (list 'set-local '__rest (list 'cdr '__rest))))))
+
+(defn range (end)
+  (let (i end nums (list))
+    (do
+      (while (< 0 i)
+        (do
+          (set-local i (- i 1))
+          (set-local nums (cons i nums))))
+      nums)))

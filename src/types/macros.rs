@@ -22,6 +22,8 @@ impl Callable for Macro {
             return Err(format!("Macro called with incorrect number of params!"));
         }
 
+        let old_scope = ctx.current_scope_id;
+
         ctx.new_child_scope();
         for (param, arg) in self.params.iter().zip(args.into_iter()) {
             ctx.set_local(param.clone(), arg);
@@ -33,6 +35,8 @@ impl Callable for Macro {
         if env::var("DEBUG1").is_ok() {
             eprintln!("{:?}", expanded_expr);
         }
+
+        ctx.set_scope(old_scope);
 
         ctx.eval(&expanded_expr)
     }
