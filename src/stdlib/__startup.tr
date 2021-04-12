@@ -7,8 +7,20 @@
   (list 'if cond
     (list 'do
       body
-      (list while cond body))
+      (list 'while cond body))
     'nil))
 
 (defmacro not (cond)
   (list 'if cond false true))
+
+(def ! not)
+
+(defmacro != (a b)
+  (list 'not (list '= a b)))
+
+(defmacro for (it items body)
+  (list 'let (list '__rest items)
+    (list 'while (list '!= '__rest 'nil)
+      (list 'do
+        (list 'let (list it (list 'car '__rest)) body)
+        (list 'set-local '__rest (list 'cdr '__rest))))))
