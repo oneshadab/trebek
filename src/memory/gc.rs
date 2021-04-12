@@ -7,16 +7,27 @@ use super::object_heap::{ObjectHeap, ObjectId};
 
 pub struct GarbageCollector {
     marked: HashSet<ObjectId>,
+    current_iter: u32,
 }
+
+static GC_ITERATIONS: u32 = 1154;
 
 impl GarbageCollector {
     pub fn new() -> GarbageCollector {
         GarbageCollector {
             marked: HashSet::new(),
+            current_iter: 0,
         }
     }
 
     pub fn collect(&mut self, obj_id: ObjectId, heap: &mut ObjectHeap) {
+        self.current_iter += 1;
+
+        if self.current_iter % GC_ITERATIONS != 0 {
+            // Only run GC once every GC_ITERATIONS
+            return;
+        }
+
         self.marked.clear();
 
         self.mark(obj_id, heap);
