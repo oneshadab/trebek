@@ -34,7 +34,6 @@ impl Repl {
     pub fn read(&self) -> Result<String, String> {
         let mut lines: Vec<String> = vec![];
 
-        let mut depth = 0;
 
         let mut rl = Editor::<()>::new();
         let history_path = self.get_history_path()?;
@@ -43,12 +42,15 @@ impl Repl {
             // No previous history
         }
 
+        let mut depth = 0;
+
         loop {
             stdout().flush().ok().expect("Could not flush stdout");
 
             let prompt = if lines.len() == 0 { ">>> " } else { "... " };
+            let spaces = " ".repeat(depth * 2);
 
-            let line = match rl.readline(prompt) {
+            let line = match rl.readline_with_initial(prompt, (&spaces, "")) {
                 Ok(line) => line,
                 Err(ReadlineError::Interrupted) => {
                     process::exit(0);
