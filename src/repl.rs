@@ -28,7 +28,9 @@ impl Repl {
                 format!("Error: {}", e.to_string())
             }
         };
-        println!("{}", output);
+        if !output.is_empty() {
+            println!("{}", output);
+        }
     }
 
     pub fn read(&self) -> Result<String, String> {
