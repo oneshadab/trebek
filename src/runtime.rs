@@ -168,6 +168,7 @@ impl Runtime {
             TObject::Builtin(builtin) => Box::new(builtin),
             TObject::Closure(func) => Box::new(func),
             TObject::Macro(mac) => Box::new(mac),
+            TObject::Dict(dt) => Box::new(dt),
             other => Err(format!("{:?} is not callable", other))?,
         };
 

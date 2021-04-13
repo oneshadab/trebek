@@ -2,6 +2,7 @@ use crate::{
     misc::RuntimeResult,
     runtime::Runtime,
     types::{builtin::Builtin, t_object::TObject},
+    types::callable::Callable,
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
@@ -41,13 +42,11 @@ fn dict_get(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     match &args[..] {
         [dict_obj, obj] => {
             let dict = ctx.eval(dict_obj)?;
-            let key = ctx.eval(obj)?;
 
-            match (dict, key) {
-                (TObject::Dict(dict), TObject::Symbol(key)) => {
-                    let val = dict.get(&key).unwrap_or(&TObject::Empty);
-                    Ok(val.clone())
-                },
+            match dict {
+                TObject::Dict(dict) => {
+                    dict.call(ctx, vec![obj.clone()])
+                }
                 _ => Err(format!("'dict-get' called with incorrect number of args")),
             }
         }
