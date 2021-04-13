@@ -1,8 +1,7 @@
 # Trebek
 A lisp interpreter written in Rust
 
-<script src="https://asciinema.org/a/14.js" id="asciicast-14" async data-autoplay="true" data-size="big"></script>
-
+<img src="public/demo.gif">
 ## Features
 - [x] Garbage Collected
 - [x] Lexical Scopes
