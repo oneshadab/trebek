@@ -2,6 +2,7 @@
 A lisp interpreter written in Rust
 
 <img src="public/demo.gif">
+
 ## Features
 - [x] Garbage Collected
 - [x] Lexical Scopes
@@ -42,6 +43,7 @@ A lisp interpreter written in Rust
 
 
 <hr>
+
 ### License
 
 Copyright &copy; 2021 Shadman Shadab.
