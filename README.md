@@ -1,5 +1,5 @@
 # Trebek
-A lisp interpreter written in Rust
+Trebek is a dialect of Lisp, with support for dictionaries, strings and closures. The interpreter is written in Rust.
 
 <img src="public/demo.gif">
 
