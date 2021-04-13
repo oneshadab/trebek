@@ -5,7 +5,10 @@ use crate::{
 };
 
 pub fn get_builtins() -> Vec<Builtin> {
-    vec![Builtin::new("dict", make_dict)]
+    vec![
+        Builtin::new("dict", make_dict),
+        Builtin::new("dict-get", dict_get),
+    ]
 }
 
 fn make_dict(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
@@ -32,4 +35,22 @@ fn make_dict(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
     let dict = keys.into_iter().zip(vals.into_iter()).collect();
 
     Ok(TObject::Dict(dict))
+}
+
+fn dict_get(ctx: &mut Runtime, args: Vec<TObject>) -> RuntimeResult<TObject> {
+    match &args[..] {
+        [dict_obj, obj] => {
+            let dict = ctx.eval(dict_obj)?;
+            let key = ctx.eval(obj)?;
+
+            match (dict, key) {
+                (TObject::Dict(dict), TObject::Symbol(key)) => {
+                    let val = dict.get(&key).unwrap_or(&TObject::Empty);
+                    Ok(val.clone())
+                },
+                _ => Err(format!("'dict-get' called with incorrect number of args")),
+            }
+        }
+        _ => Err(format!("'dict-get' called with incorrect number of args")),
+    }
 }
